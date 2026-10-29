@@ -1,10 +1,10 @@
 {
-  "_note": "Polaris-owned asset ids, generated from logo.png and plaris.png in the repository root. Interface icons are drawn at runtime by App/Components/Glyph, not loaded from assets.",
+  "_note": "Polaris-owned asset ids. The wordmark comes from assets/branding/polaris-wordmark.png, the toolbar icons from polaris-icon-{idle,ok,warn,error}.png, all generated from the logo. Interface icons are drawn at runtime by App/Components/Glyph, not loaded from assets.",
   "Polaris": {
     "Banner": "rbxassetid://138311001235340",
-    "Logo": "rbxassetid://80101722036551",
-    "LogoOk": "rbxassetid://80101722036551",
-    "LogoWarn": "rbxassetid://80101722036551",
-    "LogoError": "rbxassetid://80101722036551"
+    "Logo": "rbxassetid://113880188245298",
+    "LogoOk": "rbxassetid://102740453110982",
+    "LogoWarn": "rbxassetid://84539782167847",
+    "LogoError": "rbxassetid://76433193340277"
   }
 }
