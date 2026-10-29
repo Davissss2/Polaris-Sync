@@ -77,6 +77,25 @@ as the `NOTICE` file requires.
 
 ## Install
 
+Windows, one file: download [`dist/PolarisSetup.exe`](dist/PolarisSetup.exe) and
+double click it. It installs the CLI under `%LOCALAPPDATA%\Polaris\bin`, adds it
+to your user `PATH` and copies `Polaris.rbxm` into the Roblox Studio plugins
+folder, so both halves are ready in one step. It is a per user install: no
+administrator prompt. Restart Studio afterwards, it only reads the plugins
+folder on startup.
+
+```
+PolarisSetup.exe                     # install or update
+PolarisSetup.exe -Version v0.1.0     # pin a release
+PolarisSetup.exe -NoPlugin           # CLI only
+PolarisSetup.exe -Force              # replace an existing plugin build
+PolarisSetup.exe -Uninstall          # remove the CLI, the PATH entry and the plugin
+```
+
+The exe is not code signed, so SmartScreen shows "Windows protected your PC".
+Choose *More info* and *Run anyway*, or use the PowerShell one liner below
+instead.
+
 Windows (PowerShell):
 
 ```powershell

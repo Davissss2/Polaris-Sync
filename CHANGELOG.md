@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- A one file Windows installer (`dist/PolarisSetup.exe`) that installs the CLI,
+  adds it to the user `PATH` and copies `Polaris.rbxm` into the Studio plugins
+  folder in one step, per user and without an administrator prompt. It takes
+  `-Version`, `-NoPlugin`, `-Force` and `-Uninstall`, and keeps an existing
+  local plugin build unless it is told to replace it
 - The plugin draws its own icons at runtime (`App/Components/Glyph`), so the
   interface no longer loads the inherited Argon bitmaps, and carries the Polaris
   palette, wordmark and toolbar icon
