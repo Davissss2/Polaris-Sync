@@ -2,6 +2,7 @@
 /target
 /sourcemap.json
 /.tmp-test
+/.tmp-*
 *.rbxm
 *.rbxmx
 *.rbxl
