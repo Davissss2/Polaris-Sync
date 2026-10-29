@@ -37,6 +37,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   so a broken plugin fails the pipeline instead of shipping
 - `Border` used `[Children]` without importing `Fusion.Children`, which made
   every widget build fail with `table index is nil` and left the panel black
+- Editing a property of an instance that comes from a model file
+  (`.model.json`, `.rbxm`, `.rbxmx`) killed the server with `Attempted to
+  update instance with no source`. Model files stay read only, but the change
+  is now skipped with a warning instead of taking the session down. Instances
+  written in the directory format (`<Name>/init.meta.json`) are still fully
+  editable from Studio
 
 ## [0.1.1] - 2026-10-29
 

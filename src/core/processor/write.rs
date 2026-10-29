@@ -605,15 +605,23 @@ pub fn apply_update(snapshot: UpdatedSnapshot, tree: &mut Tree, vfs: &Vfs) -> Re
 
 			if let Some(_class) = snapshot.class {
 				// You can't change the class of an instance inside Roblox Studio
-				unreachable!()
+				warn!("Attempted to change the class of instance {:?}. Skipping", snapshot.id);
+				return Ok(());
 			}
 
 			if let Some(_meta) = snapshot.meta {
 				// Currently Argon client does not update meta
-				unreachable!()
+				warn!("Attempted to update meta of instance {:?}. Skipping", snapshot.id);
+				return Ok(());
 			}
 		}
-		SourceKind::None => panic!("Attempted to update instance with no source: {:?}", snapshot.id),
+		// Model files (.model.json, .rbxm, .rbxmx) are read only: property
+		// changes made in Studio cannot be written back into them, so the
+		// change is dropped with a warning instead of taking the server down
+		SourceKind::None => {
+			warn!("Attempted to update instance with no source: {:?}. Skipping", snapshot.id);
+			return Ok(());
+		}
 	}
 
 	Ok(())

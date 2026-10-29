@@ -55,6 +55,10 @@ cd ..
    MessagePack, which Rojo skips without failing, so the plugin dies on load.
    `polaris build` converts it into a ModuleScript; CI builds the plugin that
    way and fails when the build breaks.
+9. Model files (`.model.json`, `.rbxm`, `.rbxmx`) are read only. Their instances
+   cannot be written back into the file, so an edit made in Studio is dropped.
+   Anything the user is expected to edit belongs in the directory format
+   (`<Name>/init.meta.json`), which both reads and writes.
 
 ## Definition of done
 
