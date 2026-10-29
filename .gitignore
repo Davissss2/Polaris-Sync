@@ -13,3 +13,6 @@
 
 # Local toolchain binaries (wally, etc.)
 /.tools
+
+# Handy copy of the packaged extension for upload, the tracked one lives in dist/
+/*.vsix
