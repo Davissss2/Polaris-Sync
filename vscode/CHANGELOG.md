@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Read the port from the session address: `polaris list --json` does not send a
+  `port` field, so the status bar showed `undefined`
+
 ## 0.1.0
 
 - Status bar entry with the ports of the running sessions, amber when a session

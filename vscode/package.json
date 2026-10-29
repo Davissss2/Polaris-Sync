@@ -2,7 +2,7 @@
   "name": "polaris",
   "displayName": "Polaris",
   "description": "Roblox sync: start, stop and inspect Polaris sessions without leaving the editor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "davissss2",
   "license": "Apache-2.0",
   "icon": "icon.png",
@@ -122,3 +122,4 @@
     "package": "npx --yes @vscode/vsce package"
   }
 }
+

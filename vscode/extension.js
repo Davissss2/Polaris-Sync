@@ -22,6 +22,14 @@ function quote(value) {
 	return process.platform === "win32" ? `"${value}"` : `'${value}'`;
 }
 
+// `list --json` reports the address, not the port, so it is read from there
+function portOf(session) {
+	const address = String(session.address || "");
+	const match = address.match(/:(\d+)\/?$/);
+
+	return match ? match[1] : String(session.id);
+}
+
 function run(args, cwd) {
 	return new Promise((resolve) => {
 		execFile(
@@ -162,7 +170,7 @@ async function start() {
 
 	if (match) {
 		vscode.window.showInformationMessage(
-			`Polaris is already serving ${vscode.workspace.asRelativePath(project)} on port ${match.port}.`
+			`Polaris is already serving ${vscode.workspace.asRelativePath(project)} on port ${portOf(match)}.`
 		);
 		refresh();
 
@@ -191,7 +199,7 @@ async function stop() {
 
 	const label =
 		running.length === 1
-			? `Stop the session on port ${running[0].port}?`
+			? `Stop the session on port ${portOf(running[0])}?`
 			: `Stop ${running.length} Polaris sessions?`;
 
 	const confirmed = await vscode.window.showWarningMessage(label, { modal: true }, "Stop");
@@ -373,7 +381,7 @@ async function refresh() {
 	}
 
 	const unhealthy = running.some((session) => !session.healthy);
-	const ports = running.map((session) => session.port).join(", ");
+	const ports = running.map(portOf).join(", ");
 
 	statusBar.text = `$(radio-tower) Polaris ${ports}`;
 	statusBar.tooltip = running
