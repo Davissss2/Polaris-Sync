@@ -16,6 +16,7 @@ local Signal = require(Packages.Signal)
 
 local manifest = require(Polaris.manifest)
 local Config = require(Polaris.Config)
+local Log = require(Polaris.Log)
 local Types = require(Polaris.Types)
 local Util = require(Polaris.Util)
 local Core = require(Polaris.Core)
@@ -487,7 +488,11 @@ function App:connect()
 		if Config:get("AutoReconnect") then
 			task.wait(RECONNECT_INTERVAL)
 
-			if self.lastUpdate + RECONNECT_INTERVAL <= os.clock() then
+			-- The user may have reconnected or canceled while this thread waited,
+			-- and the old timestamp check made the retry easy to skip for good
+			if self.core == nil and not canceled then
+				Log.info("Reconnecting to the Polaris server..")
+
 				self:connect()
 			end
 		end
