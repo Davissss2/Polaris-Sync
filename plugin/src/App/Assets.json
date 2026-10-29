@@ -1,11 +1,11 @@
 {
-  "_note": "Placeholder asset ids inherited from the fork. Replace them with your own icons before publishing the plugin",
+  "_note": "Polaris-owned asset ids. Sources: assets/branding/polaris-icon-512.png and polaris-banner.png",
   "Polaris": {
-    "Banner": "rbxassetid://16996859431",
-    "Logo": "rbxassetid://16940983037",
-    "LogoOk": "rbxassetid://17419316559",
-    "LogoWarn": "rbxassetid://17419316412",
-    "LogoError": "rbxassetid://17419316704"
+    "Banner": "rbxassetid://135093501410112",
+    "Logo": "rbxassetid://82411065077296",
+    "LogoOk": "rbxassetid://82411065077296",
+    "LogoWarn": "rbxassetid://82411065077296",
+    "LogoError": "rbxassetid://82411065077296"
   },
   "Icons": {
     "Settings": "rbxassetid://16549970121",
