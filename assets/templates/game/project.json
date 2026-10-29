@@ -1,0 +1,65 @@
+{
+  "name": "$name",
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$path": "src/Workspace"
+    },
+    "Players": {
+      "$path": "src/Players"
+    },
+    "Lighting": {
+      "$path": "src/Lighting"
+    },
+    "MaterialService": {
+      "$path": "src/MaterialService"
+    },
+    "ReplicatedFirst": {
+      "$path": "src/ReplicatedFirst"
+    },
+    "ReplicatedStorage": {
+      "$path": "src/ReplicatedStorage",
+      "Packages": {
+        "$path": "Packages"
+      }
+    },
+    "ServerScriptService": {
+      "$path": "src/ServerScriptService",
+      "ServerPackages": {
+        "$path": "ServerPackages"
+      }
+    },
+    "ServerStorage": {
+      "$path": "src/ServerStorage"
+    },
+    "StarterGui": {
+      "$path": "src/StarterGui"
+    },
+    "StarterPack": {
+      "$path": "src/StarterPack"
+    },
+    "StarterPlayer": {
+      "StarterCharacterScripts": {
+        "$path": "src/StarterPlayer/StarterCharacterScripts"
+      },
+      "StarterPlayerScripts": {
+        "$path": "src/StarterPlayer/StarterPlayerScripts"
+      }
+    },
+    "Teams": {
+      "$path": "src/Teams"
+    },
+    "SoundService": {
+      "$path": "src/SoundService"
+    },
+    "TextChatService": {
+      "$path": "src/TextChatService"
+    },
+    "LocalizationService": {
+      "$path": "src/LocalizationService"
+    },
+    "TestService": {
+      "$path": "src/TestService"
+    }
+  }
+}

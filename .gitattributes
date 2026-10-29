@@ -1,0 +1,10 @@
+# Normalize line endings for a cross-platform project
+* text=auto eol=lf
+
+# Roblox and image binaries
+*.png binary
+*.rbxm binary
+*.rbxmx binary
+*.rbxl binary
+*.rbxlx binary
+*.msgpack binary
