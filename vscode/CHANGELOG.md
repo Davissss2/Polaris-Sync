@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+- Knows whether Studio is actually attached, not just whether the server is up:
+  the status bar adds a crossed plug and turns amber when no editor is
+  listening, and the tooltip names the attached clients
+- `Session Info` prints the clients of every session
+- Requires Polaris 0.1.3 or newer for the client list; older servers keep working
+  and simply do not report it
+
 ## 0.2.0
 
 - Activates only in folders that contain a Polaris or Rojo project, or when a

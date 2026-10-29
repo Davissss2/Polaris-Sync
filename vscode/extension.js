@@ -91,6 +91,26 @@ function projectName(session) {
 	return path.basename(path.dirname(session.project || ""));
 }
 
+// Older servers do not report clients at all, so undefined is "unknown" and
+// must not be shown as "nothing is connected"
+function clientsOf(session) {
+	return Array.isArray(session.clients) ? session.clients : undefined;
+}
+
+function studioState(session) {
+	const clients = clientsOf(session);
+
+	if (clients === undefined) {
+		return undefined;
+	}
+
+	if (clients.length === 0) {
+		return "no Studio";
+	}
+
+	return clients.join(", ");
+}
+
 function workspaceRoot() {
 	const folders = vscode.workspace.workspaceFolders;
 	return folders && folders.length ? folders[0].uri.fsPath : undefined;
@@ -358,9 +378,12 @@ async function sessionInfo() {
 
 function appendSessions(list) {
 	for (const session of list) {
+		const studio = studioState(session);
+
 		output.appendLine(`  session ${session.id}  (${projectName(session)})`);
 		output.appendLine(`    project ${session.project}`);
 		output.appendLine(`    address ${session.address}`);
+		output.appendLine(`    clients ${studio === undefined ? "unknown" : studio}`);
 		output.appendLine(`    pid     ${session.pid}`);
 		output.appendLine(`    health  ${session.healthy ? "ok" : "unhealthy"}`);
 	}
@@ -374,7 +397,13 @@ async function openMenu() {
 	const outside = all.length - mine.length;
 	const project = findProjects()[0];
 	const state = mine.length
-		? `$(radio-tower) ${mine.map((session) => `${projectName(session)}:${portOf(session)}`).join(", ")}`
+		? mine
+				.map((session) => {
+					const studio = studioState(session);
+
+					return `${projectName(session)}:${portOf(session)}${studio === "no Studio" ? " (no Studio)" : ""}`;
+				})
+				.join(", ")
 		: "$(circle-slash) none for this workspace";
 
 	const items = [
@@ -452,18 +481,26 @@ async function refresh() {
 	}
 
 	const unhealthy = mine.some((session) => !session.healthy);
+	const detached = mine.filter((session) => {
+		const clients = clientsOf(session);
 
-	statusBar.text = `$(radio-tower) Polaris ${mine.map(portOf).join(", ")}`;
+		return clients !== undefined && clients.length === 0;
+	}).length;
+
+	statusBar.text =
+		`$(radio-tower) Polaris ${mine.map(portOf).join(", ")}` + (detached > 0 ? " $(debug-disconnect)" : "");
 	statusBar.tooltip = mine
-		.map(
-			(session) =>
-				`${projectName(session)} · ${vscode.workspace.asRelativePath(session.project)}\n${session.address}${
-					session.healthy ? "" : " (unhealthy)"
-				}\npid ${session.pid}`
-		)
+		.map((session) => {
+			const studio = studioState(session);
+
+			return `${projectName(session)} · ${vscode.workspace.asRelativePath(session.project)}\n${session.address}${
+				session.healthy ? "" : " (unhealthy)"
+			}${studio === undefined ? "" : `\n${studio}`}\npid ${session.pid}`;
+		})
 		.join("\n\n");
 
-	statusBar.backgroundColor = unhealthy ? new vscode.ThemeColor("statusBarItem.warningBackground") : undefined;
+	statusBar.backgroundColor =
+		unhealthy || detached > 0 ? new vscode.ThemeColor("statusBarItem.warningBackground") : undefined;
 }
 
 function activate(context) {

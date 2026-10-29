@@ -7,6 +7,9 @@ sessions without leaving the editor.
 
 - Status bar entry that shows the ports of the running Polaris sessions and
   turns amber when one of them reports an unhealthy session.
+- It also tells whether Studio is attached: a crossed plug appears when the
+  server is up but no editor is listening, which is the difference between "it
+  is running" and "it is working".
 - One menu (`Polaris: Open Menu`, or click the status bar) with every action.
 - Commands in the palette: `Start Server`, `Stop Server`, `Build Place`,
   `New Project`, `Install Studio Plugin`, `Session Info`.

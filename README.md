@@ -120,11 +120,11 @@ also works.
 
 ### Editor extension
 
-[`dist/polaris-0.2.0.vsix`](dist/polaris-0.2.0.vsix) wraps the CLI in VS Code
+[`dist/polaris-0.3.0.vsix`](dist/polaris-0.3.0.vsix) wraps the CLI in VS Code
 (and anything that takes a `.vsix`: Cursor, VSCodium, Qoder):
 
 ```
-code --install-extension dist/polaris-0.2.0.vsix
+code --install-extension dist/polaris-0.3.0.vsix
 ```
 
 It adds a status bar entry with the ports of the running sessions (amber when
