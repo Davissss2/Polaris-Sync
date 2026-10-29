@@ -47,6 +47,30 @@ DataModel tree and the local server the Studio plugin talks to.
 | **No telemetry, no auto-update** | Nothing phones home. No silent downloads from a third-party repository. |
 | **Your files, your rules** | Delete a service entry and it is gone. Add one back with `polaris workspace expand`. |
 
+## Install
+
+Windows (PowerShell):
+
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/Davissss2/Polaris-Sync/main/install.ps1 | iex"
+```
+
+Linux and macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Davissss2/Polaris-Sync/main/install.sh | sh
+```
+
+The installer picks the right binary for your OS and architecture from the
+latest release, installs it and, on Windows, adds it to your user `PATH`.
+Pin a version with `-Version v0.1.0` (PowerShell) or
+`POLARIS_VERSION=v0.1.0` (shell); choose the destination with `-Dir` or
+`POLARIS_INSTALL_DIR`. Builds exist for Windows, macOS and Linux on x86_64
+and aarch64.
+
+Already have Rust? `cargo install --git https://github.com/Davissss2/Polaris-Sync`
+also works.
+
 ## Quick start
 
 ```bash
