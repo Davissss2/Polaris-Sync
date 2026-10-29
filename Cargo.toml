@@ -89,5 +89,13 @@ winsafe = { version = "0.0.26", features = ["user"] }
 [dev-dependencies]
 approx = "0.5.1"
 
+# The CLI spends its life inside the sync and build loops: link-time
+# optimisation plus a single codegen unit is a straight win over the
+# default release profile, and stripping keeps the download small.
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
 [patch.crates-io]
 notify-debouncer-full = { path = "crates/notify-debouncer-full" }
