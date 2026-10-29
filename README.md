@@ -47,6 +47,34 @@ DataModel tree and the local server the Studio plugin talks to.
 | **No telemetry, no auto-update** | Nothing phones home. No silent downloads from a third-party repository. |
 | **Your files, your rules** | Delete a service entry and it is gone. Add one back with `polaris workspace expand`. |
 
+## Polaris vs Argon
+
+Polaris is a fork of [Argon](https://github.com/argon-rbx/argon) under Apache-2.0,
+so the sync engine is the same. What changed is the part you feel every day:
+the defaults, the feedback and the things you can drive from a script.
+
+| | Argon | Polaris |
+| --- | --- | --- |
+| Two-way sync | off (`twoWaySync = false`) | **on**, so an edit in Studio reaches the disk |
+| Instance sync | scripts only (`onlyCodeMode = true`) | **whole instances**, so a GUI built in Studio is persisted |
+| Property syncback | off | **on** for anything that is not a script |
+| Unknown instances | deleted on connect | **kept**, so a hand-edited place is not wiped |
+| Prompts | `Always`, a dialog on every connect | `Never`, plus a confirmation when a sync would delete more than `RemovalsThreshold` (25) instances |
+| Auto reconnect | off | **on** |
+| Session security | no token | `--secure` plus a `Token` setting in the plugin (opt-in today) |
+| Sync state | not reported | `Syncing` / `Synced` / `Error` in the panel, the failing message under it, and a badge on the toolbar icon |
+| Reflection lookups | database built at load, descriptor allocated per property | database built on first use, descriptors cached per class and property |
+| Model files | property update panics the server | the change is dropped with a warning (source; next release) |
+
+On the command line Polaris adds `list`, `info` and `workspace`, the `--json`
+and `--yes` global flags, and a `Token` handshake the plugin can speak. Argon
+still has `update`, which this fork does not ship: upgrades are an explicit
+download, never a silent one.
+
+The interface is Polaris' own too. Icons are drawn at runtime from code, the
+palette and wordmark come from the project logo, and no Argon asset is loaded,
+as the `NOTICE` file requires.
+
 ## Install
 
 Windows (PowerShell):
