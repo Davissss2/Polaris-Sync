@@ -1,7 +1,14 @@
 use anyhow::{bail, Result};
 use colored::Colorize;
 use crossbeam_channel::{Receiver, Sender};
-use std::{collections::HashMap, sync::RwLock};
+use std::{
+	collections::HashMap,
+	sync::{
+		atomic::{AtomicU64, Ordering},
+		RwLock,
+	},
+	time::{SystemTime, UNIX_EPOCH},
+};
 
 use crate::{
 	argon_warn,
@@ -9,6 +16,17 @@ use crate::{
 	constants::{MAX_QUEUED_MESSAGES, QUEUE_TIMEOUT},
 	server::{self, Message},
 };
+
+/// A client that has not polled in this long is gone: Studio was closed or
+/// reloaded without unsubscribing
+const CLIENT_TIMEOUT_MS: u64 = 15_000;
+
+fn now_ms() -> u64 {
+	SystemTime::now()
+		.duration_since(UNIX_EPOCH)
+		.map(|elapsed| elapsed.as_millis() as u64)
+		.unwrap_or(0)
+}
 
 macro_rules! read {
 	($rwlock:expr) => {
@@ -22,11 +40,12 @@ macro_rules! write {
 	};
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct Listener {
 	pub id: u32,
 	pub name: String,
 	pub is_internal: bool,
+	pub last_seen: AtomicU64,
 }
 
 #[derive(Debug)]
@@ -113,6 +132,8 @@ impl Queue {
 			bail!("Not subscribed")
 		}
 
+		self.touch(id);
+
 		let queues = read!(self.queues);
 		let receiver = queues.get(&id).unwrap().receiver.clone();
 
@@ -125,6 +146,8 @@ impl Queue {
 		if !self.is_subscribed(id) {
 			bail!("Not subscribed")
 		}
+
+		self.touch(id);
 
 		let queues = read!(self.queues);
 		let receiver = queues.get(&id).unwrap().receiver.clone();
@@ -165,6 +188,7 @@ impl Queue {
 			id,
 			name: name.to_owned(),
 			is_internal: false,
+			last_seen: AtomicU64::new(now_ms()),
 		};
 
 		write!(self.listeners).push(listener);
@@ -191,6 +215,7 @@ impl Queue {
 			id,
 			name: format!("Internal listener #{id}"),
 			is_internal: true,
+			last_seen: AtomicU64::new(now_ms()),
 		};
 
 		write!(self.listeners).push(listener);
@@ -229,6 +254,44 @@ impl Queue {
 		read!(self.listeners).iter().any(|listener| listener.id == id)
 	}
 
+	fn touch(&self, id: u32) {
+		let listeners = self.listeners.write().unwrap();
+
+		for listener in listeners.iter() {
+			if listener.id == id {
+				listener.last_seen.store(now_ms(), Ordering::Relaxed);
+			}
+		}
+	}
+
+	/// Drops clients that stopped polling. Studio closes without unsubscribing,
+	/// and the leftover listener would be counted as a live connection
+	fn prune(&self) {
+		let now = now_ms();
+		let mut dead = Vec::new();
+
+		self.listeners.write().unwrap().retain(|listener| {
+			let idle = now.saturating_sub(listener.last_seen.load(Ordering::Relaxed));
+			let alive = listener.is_internal || idle <= CLIENT_TIMEOUT_MS;
+
+			if !alive {
+				dead.push(listener.id);
+			}
+
+			alive
+		});
+
+		if dead.is_empty() {
+			return;
+		}
+
+		let mut queues = self.queues.write().unwrap();
+
+		for id in dead {
+			queues.remove(&id);
+		}
+	}
+
 	pub fn get_first_non_internal_listener_name(&self) -> Option<String> {
 		read!(self.listeners)
 			.iter()
@@ -240,6 +303,8 @@ impl Queue {
 	/// session can be healthy with an empty list: the server is up but Studio
 	/// is not listening.
 	pub fn clients(&self) -> Vec<String> {
+		self.prune();
+
 		read!(self.listeners)
 			.iter()
 			.filter(|listener| !listener.is_internal)

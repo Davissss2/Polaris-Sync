@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), that adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-10-29
+
+### Fixed
+
+- Closing or reloading Studio left its subscription behind, so `clients`
+  counted connections that no longer existed and a session reported `2` after a
+  single reload. A client that stops polling for fifteen seconds is dropped
+
 ## [0.1.3] - 2026-10-29
 
 ### Added
