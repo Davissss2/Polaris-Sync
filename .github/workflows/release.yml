@@ -82,9 +82,40 @@ jobs:
           path: polaris-${{ github.ref_name }}-${{ matrix.label }}.zip
           if-no-files-found: error
 
+  plugin:
+    name: Build plugin
+    runs-on: ubuntu-latest
+    # A broken plugin build must not block the CLI release
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Install toolchain
+        working-directory: plugin
+        run: aftman install
+
+      - name: Install packages
+        working-directory: plugin
+        run: wally install
+
+      - name: Build plugin
+        working-directory: plugin
+        run: rojo build -o ../Polaris.rbxm
+
+      - name: Upload plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: polaris-plugin
+          path: Polaris.rbxm
+          if-no-files-found: error
+
   release:
     name: Publish release
-    needs: build
+    needs: [build, plugin]
     runs-on: ubuntu-latest
 
     steps:
@@ -97,7 +128,9 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.zip
+          files: |
+            dist/*.zip
+            dist/*.rbxm
           generate_release_notes: true
           draft: false
           prerelease: false

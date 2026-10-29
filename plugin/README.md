@@ -22,14 +22,18 @@ rojo build -o Polaris.rbxm
 Then install it:
 
 ```bash
-# Option A: let the CLI copy it into the Studio plugins folder
-polaris plugin install plugin/Polaris.rbxm
+# Option A: download the build published with the latest release
+polaris plugin install
 
-# Option B: copy it manually
+# Option B: use the file you just built
+polaris plugin install Polaris.rbxm
+
+# Option C: copy it manually
 #   Windows: %LOCALAPPDATA%\Roblox\Plugins\Polaris.rbxm
 ```
 
-`polaris plugin uninstall` removes it again.
+`polaris plugin uninstall` removes it again, and `--output <path>` installs it
+somewhere else.
 
 ## Usage
 

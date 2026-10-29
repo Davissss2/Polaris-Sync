@@ -74,14 +74,17 @@ also works.
 ## Quick start
 
 ```bash
-# 1. Scaffold a workspace with every service mapped
+# 1. Install the Studio plugin (downloads the matching build)
+polaris plugin install
+
+# 2. Scaffold a workspace with every service mapped
 polaris init my-game
 cd my-game
 
-# 2. Start the local server and open Studio
+# 3. Start the local server and open Studio
 polaris serve
 
-# 3. Build a place file whenever you need one
+# 4. Build a place file whenever you need one
 polaris build
 ```
 
@@ -107,7 +110,7 @@ polaris workspace expand
 | `polaris debug [mode]` | Start or stop a playtest (`play`, `run`, `start`, `stop`) |
 | `polaris stop` | Stop one session, or all of them with `--all` |
 | `polaris config` | Read, set, export or reset global and workspace settings |
-| `polaris plugin` | Install or uninstall the built Studio plugin |
+| `polaris plugin` | Install the Studio plugin from the latest release (or a local `.rbxm`) |
 | `polaris doc` | Open the project page in your browser |
 
 Global flags: `--yes` (no prompts), `--json` (machine output), `-v/-q`

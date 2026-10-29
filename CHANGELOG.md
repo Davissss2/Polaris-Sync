@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), that adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-10-29
+
+### Added
+
+- `polaris plugin install` without arguments downloads `Polaris.rbxm` from the
+  latest release instead of requiring a local build
+- `--output` on `polaris plugin` to install somewhere other than the Studio
+  plugins folder
+- The release pipeline now builds the plugin with Rojo and Wally and publishes
+  it next to the CLI binaries
+
 ## [0.1.0] - 2026-10-29
 
 First public release of Polaris, the Roblox sync tool.
