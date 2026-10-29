@@ -9,14 +9,21 @@ plugin (Apache-2.0), rebranded for Polaris.
 
 ## Build
 
-Requirements: [Aftman](https://github.com/LPGhatguy/aftman) (or Rojo and
-Wally installed manually).
+The plugin is built with the Polaris CLI, **not** with Rojo:
+`src/Lib/Dom/database.msgpack` holds the Roblox reflection database, and Rojo
+silently skips MessagePack files, which produces a plugin that fails on load
+with `database is not a valid member of ModuleScript "Polaris.Lib.Dom"`.
+
+Requirements: [Aftman](https://github.com/LPGhatguy/aftman) (or Wally installed
+manually) and a Rust toolchain.
 
 ```bash
+cargo build
 cd plugin
 aftman install
 wally install
-rojo build -o Polaris.rbxm
+cd ..
+./target/debug/polaris build plugin   # writes Polaris.rbxm at the repository root
 ```
 
 Then install it:

@@ -7,3 +7,9 @@
 *.rbxmx
 *.rbxl
 *.rbxlx
+
+# Local sync workspace created with `polaris init game`
+/game
+
+# Local toolchain binaries (wally, etc.)
+/.tools

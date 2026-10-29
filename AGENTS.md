@@ -27,13 +27,14 @@ cargo build
 ./target/debug/polaris --help
 ```
 
-The plugin is built separately:
+The plugin is built separately, with the CLI (never with Rojo):
 
 ```bash
 cd plugin
 aftman install
 wally install
-rojo build -o Polaris.rbxm
+cd ..
+./target/debug/polaris build plugin
 ```
 
 ## Rules
@@ -50,6 +51,10 @@ rojo build -o Polaris.rbxm
 6. Do not rename the `PolarisEmpty` property or the MessagePack protocol
    without updating `plugin/src/Core/Snapshot.luau` and the CLI together.
 7. Preserve the Apache-2.0 license and the attribution in `NOTICE`.
+8. Never build the plugin with Rojo. `plugin/src/Lib/Dom/database.msgpack` is
+   MessagePack, which Rojo skips without failing, so the plugin dies on load.
+   `polaris build` converts it into a ModuleScript; CI builds the plugin that
+   way and fails when the build breaks.
 
 ## Definition of done
 

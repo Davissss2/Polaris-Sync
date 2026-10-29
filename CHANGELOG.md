@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), that adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The Studio plugin loads again. `plugin/src/Lib/Dom/database.msgpack` is
+  MessagePack, and Rojo skips it without failing, so the published plugin died
+  on load (`database is not a valid member of ModuleScript "Polaris.Lib.Dom"`)
+  and never created its toolbar. The plugin is now built with `polaris build`,
+  which turns the database into a ModuleScript, and CI builds it on every push
+  so a broken plugin fails the pipeline instead of shipping
+
 ## [0.1.1] - 2026-10-29
 
 ### Added

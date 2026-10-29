@@ -91,20 +91,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
+
+      # The plugin embeds `src/Lib/Dom/database.msgpack`, which Rojo silently
+      # skips: `polaris build` turns it into a ModuleScript, so the CLI builds
+      # the plugin. Building it with Rojo ships a plugin that fails on load.
+      - name: Build CLI
+        run: cargo build --release
+
       - name: Setup Aftman
         uses: ok-nick/setup-aftman@v0.4.2
 
-      - name: Install toolchain
-        working-directory: plugin
-        run: aftman install --no-trust-check
-
       - name: Install packages
         working-directory: plugin
-        run: wally install
+        run: aftman install --no-trust-check && wally install
 
       - name: Build plugin
-        working-directory: plugin
-        run: rojo build -o ../Polaris.rbxm
+        run: ./target/release/polaris build plugin
 
       - name: Upload plugin
         uses: actions/upload-artifact@v4

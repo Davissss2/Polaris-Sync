@@ -33,6 +33,31 @@ jobs:
       - name: Test
         run: cargo test --verbose
 
+  plugin:
+    name: Build Plugin
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build CLI
+        run: cargo build --verbose
+
+      - name: Setup Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Install packages
+        working-directory: plugin
+        run: aftman install --no-trust-check && wally install
+
+      # Rojo skips `src/Lib/Dom/database.msgpack` and produces a plugin that
+      # dies on load, so this check builds it with the CLI on purpose
+      - name: Build plugin
+        run: ./target/debug/polaris build plugin
+
   lint-format:
     name: Lint and Format
     runs-on: ubuntu-latest
