@@ -76,6 +76,10 @@ function App.new()
 	self.lastSync = Value(os.time())
 	self.lastSyncKind = Value("Unknown")
 
+	-- Real sync state, driven by Core instead of assumed by the interface
+	self.syncState = Value("Synced")
+	self.syncError = Value("")
+
 	self.rootSize = Value(Vector2.new(300, 200))
 	self.icon = Value(Assets.Polaris.Logo)
 	self.pages = Value({})
@@ -168,6 +172,20 @@ function App:setPage(page)
 			BackgroundColor3 = Theme.Colors.Background,
 			BorderSizePixel = 0,
 			[Children] = {
+				-- Polaris backdrop: a very subtle brand gradient instead of a flat fill
+				New "UIGradient" {
+					Rotation = 55,
+					Color = Computed(function(use)
+						if use(Theme.IsDark) then
+							return ColorSequence.new({
+								ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 17, 33)),
+								ColorSequenceKeypoint.new(1, Color3.fromRGB(23, 15, 41)),
+							})
+						end
+
+						return ColorSequence.new(Color3.fromRGB(246, 249, 255))
+					end),
+				},
 				List {
 					VerticalAlignment = Enum.VerticalAlignment.Center,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
@@ -182,7 +200,6 @@ function App:setPage(page)
 						Image {
 							Size = UDim2.fromOffset(155, 35),
 							Image = Assets.Polaris.Banner,
-							ImageColor3 = Theme.Colors.Brand,
 						},
 						Text {
 							AnchorPoint = Vector2.new(1, 1),
@@ -320,6 +337,9 @@ function App:connect()
 
 	self.core = Core.new(self.host, self.port)
 
+	self.syncState:set("Syncing")
+	self.syncError:set("")
+
 	task.spawn(function()
 		task.wait(0.2)
 
@@ -394,6 +414,9 @@ function App:connect()
 		loading = false
 		project:set(projectDetails)
 
+		self.syncState:set("Synced")
+		self.syncError:set("")
+
 		self.lastSync:set(os.time())
 
 		self.lastSyncKind:set(Config:get("InitialSyncPriority"))
@@ -419,6 +442,27 @@ function App:connect()
 		end
 	end)
 
+	self.core:onProgress(function(state, detail)
+		self.syncState:set(state)
+
+		if state == "Error" then
+			self.syncError:set(
+				if type(detail) == "string"
+					then detail
+					elseif detail and detail.message then detail.message
+					else tostring(detail)
+			)
+
+			self:setIcon("Error")
+		elseif state == "Syncing" then
+			self:setIcon("Warn")
+		else
+			self.syncError:set("")
+
+			self:setIcon("Ok")
+		end
+	end)
+
 	self.core:run():catch(function(err)
 		loading = false
 
@@ -432,6 +476,9 @@ function App:connect()
 			App = self,
 			Message = err.message or tostring(err),
 		})
+
+		self.syncState:set("Error")
+		self.syncError:set(err.message or tostring(err))
 
 		self:setIcon("Error")
 

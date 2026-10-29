@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- The plugin draws its own icons at runtime (`App/Components/Glyph`), so the
+  interface no longer loads the inherited Argon bitmaps, and carries the Polaris
+  palette, wordmark and toolbar icon
+- Deletions above `RemovalsThreshold` (25 by default) always ask for
+  confirmation, even when prompts are set to `Never`
+- Two-way editing of instances, not just scripts: `OnlyCodeMode`,
+  `SyncbackProperties` and `KeepUnknowns` now default to values that let a GUI
+  built in Studio land on the disk and a `.model.json` built on the disk land in
+  Studio
+
+### Changed
+
+- The connection card reports the state Core actually reached (`Syncing`,
+  `Synced`, `Error` with the failing message) instead of assuming `Synced`
+- The reflection database is built on first use and property descriptors are
+  cached per class and property, instead of on every read and write
+- The release profile enables thin LTO, a single codegen unit and symbol
+  stripping
+
 ### Fixed
 
 - The Studio plugin loads again. `plugin/src/Lib/Dom/database.msgpack` is
@@ -14,6 +35,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   and never created its toolbar. The plugin is now built with `polaris build`,
   which turns the database into a ModuleScript, and CI builds it on every push
   so a broken plugin fails the pipeline instead of shipping
+- `Border` used `[Children]` without importing `Fusion.Children`, which made
+  every widget build fail with `table index is nil` and left the panel black
 
 ## [0.1.1] - 2026-10-29
 

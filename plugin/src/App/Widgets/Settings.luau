@@ -153,6 +153,13 @@ local SETTINGS_DATA: { { Title: string, Settings: { SettingData } } } = {
 				CustomWidth = 40,
 			},
 			{
+				Setting = "RemovalsThreshold",
+				Name = "Removals Threshold",
+				Description = "Deletions above this number always prompt for confirmation, even with prompts set to Never",
+				Filter = filterNumber,
+				CustomWidth = 40,
+			},
+			{
 				Setting = "LogLevel",
 				Name = "Log Level",
 				Description = "The level of logging you want to see in the output",

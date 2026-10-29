@@ -23,6 +23,7 @@ export type Setting =
 	| "DiffLinesLimit"
 	| "DisplayPrompts"
 	| "ChangesThreshold"
+	| "RemovalsThreshold"
 	| "LogLevel"
 	| "OverridePackages"
 
@@ -45,15 +46,19 @@ local DEFAULTS = {
 	AutoConnect = true,
 	AutoReconnect = true,
 	LiveHydrate = true,
-	KeepUnknowns = false,
+	-- Instances that only exist in Studio are kept instead of deleted, so the
+	-- place can be edited by hand without the next sync wiping it
+	KeepUnknowns = true,
 	TwoWaySync = true,
-	SyncbackProperties = false,
-	OnlyCodeMode = true,
+	-- Needed to move, rename or resize a GUI in Studio and get it on the disk
+	SyncbackProperties = true,
+	OnlyCodeMode = false,
 	OpenInEditor = false,
 	Https = false,
 	DiffLinesLimit = 3000,
 	DisplayPrompts = "Never",
 	ChangesThreshold = 5,
+	RemovalsThreshold = 25,
 	LogLevel = "Warn",
 	OverridePackages = true,
 }

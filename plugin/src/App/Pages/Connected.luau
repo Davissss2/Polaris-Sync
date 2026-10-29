@@ -6,7 +6,6 @@ local Components = App.Components
 local Fusion = require(Polaris.Packages.Fusion)
 
 local Types = require(Polaris.Types)
-local Assets = require(App.Assets)
 local Theme = require(App.Theme)
 
 local Project = require(Widgets.Project)
@@ -16,9 +15,11 @@ local Container = require(Components.Container)
 local Padding = require(Components.Padding)
 local Text = require(Components.Text)
 local List = require(Components.List)
+local Corner = require(Components.Corner)
 local Box = require(Components.Box)
 
 local Value = Fusion.Value
+local New = Fusion.New
 local Observer = Fusion.Observer
 local Computed = Fusion.Computed
 local Children = Fusion.Children
@@ -29,6 +30,27 @@ type Props = {
 	App: { [string]: any },
 	Project: Fusion.Value<Types.Project>,
 }
+
+-- Colours and labels for the real sync state reported by Core
+local function statusColor(use, state: string): Color3
+	if state == "Error" then
+		return use(Theme.Colors.Danger)
+	elseif state == "Syncing" then
+		return use(Theme.Colors.BrandCyan)
+	end
+
+	return use(Theme.Colors.Success)
+end
+
+local function statusLabel(state: string): string
+	if state == "Error" then
+		return "Error"
+	elseif state == "Syncing" then
+		return "Syncing"
+	end
+
+	return "Synced"
+end
 
 return function(props: Props): { Instance }
 	local syncedText = Value("just now")
@@ -71,45 +93,116 @@ return function(props: Props): { Instance }
 	return {
 		List {},
 		Box {
-			Size = UDim2.new(1, 0, 0, Theme.CompSizeY.Large * 1.5),
+			Size = UDim2.new(1, 0, 0, Theme.CompSizeY.Large * 2),
+			BackgroundColor = Theme.Colors.Surface,
+			BorderGradient = true,
+			BorderTransparency = 0.45,
 			[Children] = {
 				Padding {},
+
+				-- Project name
 				Text {
-					Size = UDim2.fromScale(0.8, 0.6),
+					Size = UDim2.new(0.55, 0, 0.55, 0),
 					Text = Computed(function(use)
 						return use(props.Project).name
 					end),
 					Font = Theme.Fonts.Bold,
 					Scaled = true,
 				},
+
+				-- Server address
 				Text {
-					Position = UDim2.fromScale(0, 0.6),
-					Size = UDim2.fromScale(0.8, 0.4),
+					Position = UDim2.fromScale(0, 0.58),
+					Size = UDim2.new(0.55, 0, 0.4, 0),
 					Text = `{props.App.host}:{props.App.port}`,
 					TextSize = Theme.TextSize.Small,
 					Font = Theme.Fonts.Mono,
+					Color = Theme.Colors.TextDimmed,
 					Scaled = true,
 				},
+
+				-- Status pill, driven by the state Core reports
+				Box {
+					AnchorPoint = Vector2.new(1, 0),
+					Position = UDim2.new(1, 0, 0, 0),
+					Size = UDim2.fromOffset(96, 26),
+					BackgroundColor = Theme.Colors.ActiveBackground,
+					BorderColor = Computed(function(use)
+						return statusColor(use, use(props.App.syncState))
+					end),
+					BorderTransparency = 0.6,
+					[Children] = {
+						Corner { Radius = 13 },
+						New "Frame" {
+							AnchorPoint = Vector2.new(0, 0.5),
+							Position = UDim2.new(0, 12, 0.5, 0),
+							Size = UDim2.fromOffset(8, 8),
+							BackgroundColor3 = Computed(function(use)
+								return statusColor(use, use(props.App.syncState))
+							end),
+							BorderSizePixel = 0,
+							[Children] = { Corner { Radius = 4 } },
+						},
+						Text {
+							AnchorPoint = Vector2.new(0, 0.5),
+							Position = UDim2.new(0, 27, 0.5, 0),
+							Size = UDim2.fromOffset(62, 20),
+							Text = Computed(function(use)
+								return statusLabel(use(props.App.syncState))
+							end),
+							TextSize = Theme.TextSize.Small,
+							Font = Theme.Fonts.Bold,
+						},
+					},
+				},
+
+				-- Last sync + direction
 				Text {
-					AnchorPoint = Vector2.new(1, 0.5),
-					Position = UDim2.new(1, -2, 0.5, 0),
+					AnchorPoint = Vector2.new(1, 0),
+					Position = UDim2.new(1, 0, 0, 32),
+					Size = UDim2.new(0.4, 0, 0.4, 0),
 					Text = Computed(function(use)
 						local lastSyncKind = use(props.App.lastSyncKind)
 						local action = ""
 
 						if lastSyncKind == "Server" then
-							action = "↓"
+							action = "↓ "
 						elseif lastSyncKind == "Client" then
-							action = "↑"
+							action = "↑ "
 						end
 
-						return action .. "<i> Synced\n" .. use(syncedText) .. "</i>"
+						return action .. use(syncedText)
 					end),
-					RichText = true,
 					Color = Theme.Colors.TextDimmed,
 					TextSize = Theme.TextSize.Small,
 					TextXAlignment = Enum.TextXAlignment.Right,
-					LineHeight = 1.2,
+					Scaled = true,
+				},
+			},
+		},
+		-- Error strip: only laid out when the last operation failed
+		Box {
+			Size = UDim2.new(1, 0, 0, 46),
+			BackgroundColor = Theme.Colors.Surface,
+			BorderColor = Theme.Colors.Danger,
+			BorderTransparency = 0.35,
+			Visible = Computed(function(use)
+				return use(props.App.syncState) == "Error"
+			end),
+			[Children] = {
+				Padding {},
+				Text {
+					Size = UDim2.fromScale(1, 1),
+					Text = Computed(function(use)
+						local message = use(props.App.syncError)
+
+						return if message == "" then "The last sync failed" else message
+					end),
+					TextSize = Theme.TextSize.Small,
+					Color = Theme.Colors.Danger,
+					AutomaticSize = Enum.AutomaticSize.None,
+					TextWrapped = true,
+					TextYAlignment = Enum.TextYAlignment.Center,
 				},
 			},
 		},
@@ -130,7 +223,7 @@ return function(props: Props): { Instance }
 					end,
 				},
 				IconButton {
-					Icon = Assets.Icons.Settings,
+					Glyph = "Settings",
 					BackgroundActive = Computed(function(use)
 						return use(props.App.settingsWidget) ~= nil
 					end),
@@ -140,7 +233,7 @@ return function(props: Props): { Instance }
 					LayoutOrder = 1,
 				},
 				IconButton {
-					Icon = Assets.Icons.Info,
+					Glyph = "Info",
 					BackgroundActive = Computed(function(use)
 						return use(projectWidget) ~= nil
 					end),

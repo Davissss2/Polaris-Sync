@@ -53,6 +53,7 @@ function Core.new(host: string?, port: string?)
 	end
 	self.__ready = function(_project: Types.Project) end
 	self.__sync = function(_kind: Types.MessageKind, _data: any) end
+	self.__progress = function(_state: "Synced" | "Syncing" | "Error", _detail: any) end
 
 	self:__handleOpenInEditor(Config:get("OpenInEditor"))
 
@@ -189,8 +190,24 @@ function Core:onSync(callback: (kind: Types.MessageKind, data: any) -> ())
 	end
 end
 
+-- Reports the state of an in-flight sync operation, so the interface can show
+-- what is actually happening instead of assuming everything went fine
+function Core:onProgress(callback: (state: "Synced" | "Syncing" | "Error", detail: any) -> ())
+	self.__progress = function(state, detail)
+		if self.status == Core.Status.Disconnecting then
+			return
+		end
+
+		return callback(state, detail)
+	end
+end
+
 function Core.wasExitGraceful(err: Error.Error)
-	return err == Error.GameId or err == Error.PlaceIds or err == Error.TooManyChanges or err == Error.Terminated
+	return err == Error.GameId
+		or err == Error.PlaceIds
+		or err == Error.TooManyChanges
+		or err == Error.MassDeletion
+		or err == Error.Terminated
 end
 
 -- Internal functions
@@ -226,6 +243,20 @@ function Core:__verifyProject(project: Types.Project, initial: boolean?): Promis
 end
 
 function Core:__verifyChanges(changes: Types.Changes, initial: boolean?): Promise.Promise
+	local removals = #changes.removals
+
+	-- Deleting instances cannot be undone from the disk, so a mass removal is
+	-- always confirmed, even when prompts are turned off
+	if removals > Config:get("RemovalsThreshold") then
+		local err = Error.new(Error.MassDeletion, removals)
+
+		if not self.__prompt(err.message, changes) then
+			return Promise.reject(err)
+		end
+
+		return Promise.resolve()
+	end
+
 	if not self:__shouldPrompt(initial) then
 		return Promise.resolve()
 	end
@@ -258,9 +289,19 @@ function Core:__startSyncLoop()
 			if kind == "SyncChanges" then
 				self:__verifyChanges(data):expect()
 
-				self.processor.write:applyChanges(data)
+				self.__progress("Syncing", data)
+
+				local ok, result = pcall(self.processor.write.applyChanges, self.processor.write, data)
+
+				if not ok then
+					self.__progress("Error", result)
+
+					return reject(Error.new(Error.ApplyFailed, tostring(result)))
+				end
+
 				self.lastSync = os.clock()
 
+				self.__progress("Synced", data)
 				self.__sync(kind, data)
 			elseif kind == "SyncDetails" then
 				self:__verifyProject(data):expect()
@@ -307,9 +348,18 @@ function Core:__startSyncbackLoop()
 				local changes = aggregateChanges
 				aggregateChanges = Changes.new()
 
-				self.client:write(changes):catch(function(err)
-					Log.warn("Failed to write changes to the server:", err)
-				end)
+				self.__progress("Syncing", changes)
+
+				self.client
+					:write(changes)
+					:andThen(function()
+						self.__progress("Synced", changes)
+					end)
+					:catch(function(err)
+						self.__progress("Error", err)
+
+						Log.warn("Failed to write changes to the server:", err)
+					end)
 
 				self.__sync("SyncbackChanges", changes)
 			end

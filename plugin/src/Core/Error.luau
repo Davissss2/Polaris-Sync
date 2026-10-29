@@ -14,10 +14,12 @@ local Error = {
 	PlaceIds = "Current PlaceId: $1 is not included in the server placeIds: $2",
 	Version = "Client version: $1 is not compatible with the server version: $2",
 	TooManyChanges = "There are $1 additions, $2 updates, $3 deletions compared to the server",
+	MassDeletion = "This sync deletes $1 instances. Accept only if you expect them to be gone",
 	Terminated = "Terminated connection by the user",
 	-- Core errors
 	UnknownEvent = "Received an unknown event from the server: $1, with data: $2",
 	Disconnected = "Disconnected from the server: $1",
+	ApplyFailed = "Failed to apply changes from the server: $1",
 	-- Process errors
 	DecodeFailed = "Failed to decode snapshot property: $1 with value: $2",
 	EncodeFailed = "Failed to encode snapshot property: $1 with value: $2",
