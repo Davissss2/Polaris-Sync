@@ -4,7 +4,7 @@ authors = ["Polaris contributors"]
 description = "Roblox Studio plugin for Polaris, the Roblox sync tool"
 registry = "https://github.com/UpliftGames/wally-index"
 license = "Apache-2.0"
-version = "0.1.1"
+version = "0.1.2"
 realm = "shared"
 private = true
 

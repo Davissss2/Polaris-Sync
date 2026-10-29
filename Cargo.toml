@@ -6,7 +6,7 @@ repository = "https://github.com/Davissss2/Polaris-Sync"
 license = "Apache-2.0"
 # Keep major.minor in sync with `plugin/wally.toml`, the plugin refuses
 # to talk to a CLI with a different protocol generation
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 
 [[bin]]

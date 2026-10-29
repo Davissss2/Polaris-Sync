@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), that adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.2] - 2026-10-29
+
+The first release that ships the plugin built with the CLI instead of Rojo, so
+the Studio half actually loads, and the first with the interface, the sync state
+reporting and the deletion guard described below.
 
 ### Added
 
