@@ -19,8 +19,11 @@ local function getColors(isDark: boolean): { [string]: { Color3 | { [string]: Co
 	border = Color3.fromHSV(h, s, v * (isDark and 1.2 or 0.85))
 
 	return {
-		-- It's actually 130, 120, 230
-		Brand = Color3.fromRGB(120, 110, 220),
+		-- Polaris palette, sampled straight from the logo gradient
+		Brand = Color3.fromRGB(59, 103, 238),
+		BrandCyan = Color3.fromRGB(80, 200, 245),
+		BrandViolet = Color3.fromRGB(139, 92, 246),
+		Ice = Color3.fromRGB(200, 226, 255),
 
 		Background = background,
 		ActiveBackground = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.Titlebar),
@@ -29,6 +32,14 @@ local function getColors(isDark: boolean): { [string]: { Color3 | { [string]: Co
 		Text = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.BrightText),
 		TextDimmed = Studio.Theme:GetColor(Enum.StudioStyleGuideColor.SubText),
 		TextBranded = isDark and Studio.Theme:GetColor(Enum.StudioStyleGuideColor.BrightText) or background,
+
+		Success = Color3.fromRGB(80, 220, 100),
+		Warning = Color3.fromRGB(235, 185, 80),
+		Danger = Color3.fromRGB(230, 100, 100),
+
+		-- Polaris surfaces: cards sit slightly above the widget background
+		Surface = background:Lerp(Color3.new(1, 1, 1), isDark and 0.05 or 0),
+		SurfaceActive = background:Lerp(Color3.new(1, 1, 1), isDark and 0.09 or 0.03),
 
 		Diff = {
 			Add = Color3.fromRGB(80, 220, 100),
@@ -46,6 +57,9 @@ local Theme = {
 	-- For autocomplete
 	Colors = {
 		Brand = init(),
+		BrandCyan = init(),
+		BrandViolet = init(),
+		Ice = init(),
 
 		Background = init(),
 		ActiveBackground = init(),
@@ -54,6 +68,13 @@ local Theme = {
 		Text = init(),
 		TextDimmed = init(),
 		TextBranded = init(),
+
+		Success = init(),
+		Warning = init(),
+		Danger = init(),
+
+		Surface = init(),
+		SurfaceActive = init(),
 
 		Diff = {
 			Add = init(),
@@ -80,7 +101,7 @@ local Theme = {
 	},
 
 	BorderThickness = 1,
-	CornerRadius = 6,
+	CornerRadius = 10,
 	ListSpacing = 12,
 	WidgetPadding = 16,
 	Padding = 8,

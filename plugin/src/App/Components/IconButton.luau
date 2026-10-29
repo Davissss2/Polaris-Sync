@@ -12,6 +12,7 @@ local getState = require(Util.getState)
 local default = require(Util.default)
 
 local Border = require(Components.Border)
+local Glyph = require(Components.Glyph)
 local Image = require(Components.Image)
 
 local New = Fusion.New
@@ -25,6 +26,8 @@ local COMPONENT_ONLY_PROPS = {
 	"Activated",
 	"Solid",
 	"Icon",
+	"Glyph",
+	"GlyphColor",
 	"BackgroundActive",
 	"Blending",
 }
@@ -33,6 +36,8 @@ type Props = {
 	Activated: (() -> ())?,
 	Solid: Fusion.CanBeState<boolean>?,
 	Icon: Fusion.CanBeState<string>?,
+	Glyph: string?,
+	GlyphColor: Fusion.CanBeState<Color3>?,
 	BackgroundActive: Fusion.Computed<boolean>?,
 	Blending: boolean?,
 	[any]: any,
@@ -84,7 +89,15 @@ return function(props: Props): TextButton
 		end,
 		[Children] = {
 			Border {},
-			Image {
+			props.Glyph and Glyph {
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				Position = UDim2.fromScale(0.5, 0.5),
+				Scale = 1.15,
+				Glyph = props.Glyph,
+				Color = props.GlyphColor or Computed(function(use)
+					return use(props.Solid) and use(Theme.Colors.TextBranded) or use(Theme.Colors.Text)
+				end),
+			} or Image {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.55, 0.55),

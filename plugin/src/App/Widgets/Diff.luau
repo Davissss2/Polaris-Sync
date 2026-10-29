@@ -9,7 +9,6 @@ local Dom = require(Polaris.Lib.Dom)
 local GlobalUtil = require(Polaris.Util)
 local Types = require(Polaris.Types)
 local Theme = require(App.Theme)
-local Assets = require(App.Assets)
 
 local ScriptDiff = require(Widgets.ScriptDiff)
 local Widget = require(Components.Plugin.Widget)
@@ -17,7 +16,7 @@ local ScrollingContainer = require(Components.ScrollingContainer)
 local Collapsible = require(Components.Collapsible)
 local Container = require(Components.Container)
 local Padding = require(Components.Padding)
-local Image = require(Components.Image)
+local Glyph = require(Components.Glyph)
 local List = require(Components.List)
 local Text = require(Components.Text)
 
@@ -250,12 +249,12 @@ local function Property(props: PropertyProps)
 			Position = UDim2.fromScale(1, 0),
 			Size = UDim2.fromOffset(Theme.TextSize.Small, Theme.TextSize.Small),
 			[Children] = {
-				Image {
+				Glyph {
 					AnchorPoint = Vector2.new(0, 0.5),
 					Position = UDim2.fromScale(0.3, 0.55),
 					Size = UDim2.fromScale(0.6, 0.6),
-					Image = Assets.Icons.External,
-					ImageColor3 = Theme.Colors.Text,
+					Glyph = "External",
+					Color = Theme.Colors.Text,
 				},
 			},
 		} or nil,

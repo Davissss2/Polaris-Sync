@@ -6,7 +6,6 @@ local Util = Components.Util
 local Fusion = require(Polaris.Packages.Fusion)
 
 local Theme = require(App.Theme)
-local Assets = require(App.Assets)
 local animate = require(Util.animate)
 local getState = require(Util.getState)
 local stripProps = require(Util.stripProps)
@@ -14,7 +13,7 @@ local stripProps = require(Util.stripProps)
 local Container = require(Components.Container)
 local Padding = require(Components.Padding)
 local Corner = require(Components.Corner)
-local Image = require(Components.Image)
+local Glyph = require(Components.Glyph)
 local List = require(Components.List)
 local Text = require(Components.Text)
 local Box = require(Components.Box)
@@ -111,12 +110,12 @@ return function(props: Props): Frame
 								Size = UDim2.fromScale(1, 1),
 								Color = props.Color or Theme.Colors.Text,
 							},
-							Image {
+							Glyph {
 								AnchorPoint = Vector2.new(1, 0.5),
 								Position = UDim2.fromScale(1, 0.5),
 								Size = UDim2.fromOffset(16, 16),
-								Image = Assets.Icons.Expand,
-								ImageColor3 = props.Color or Theme.Colors.Text,
+								Glyph = "ChevronDown",
+								Color = props.Color or Theme.Colors.Text,
 								Rotation = Spring(
 									Computed(function(use)
 										return use(isExpanded) and 180 or 0

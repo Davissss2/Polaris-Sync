@@ -1,20 +1,10 @@
 {
-  "_note": "Polaris-owned asset ids. Sources: assets/branding/polaris-icon-512.png and polaris-banner.png",
+  "_note": "Polaris-owned asset ids, generated from logo.png and plaris.png in the repository root. Interface icons are drawn at runtime by App/Components/Glyph, not loaded from assets.",
   "Polaris": {
-    "Banner": "rbxassetid://135093501410112",
-    "Logo": "rbxassetid://82411065077296",
-    "LogoOk": "rbxassetid://82411065077296",
-    "LogoWarn": "rbxassetid://82411065077296",
-    "LogoError": "rbxassetid://82411065077296"
-  },
-  "Icons": {
-    "Settings": "rbxassetid://16549970121",
-    "Checkmark": "rbxassetid://16528403189",
-    "Spinner": "rbxassetid://16548972586",
-    "Info": "rbxassetid://16549936110",
-    "Help": "rbxassetid://16549970317",
-    "Dropdown": "rbxassetid://16698223846",
-    "Expand": "rbxassetid://82247774782797",
-    "External": "rbxassetid://116551774518863"
+    "Banner": "rbxassetid://138311001235340",
+    "Logo": "rbxassetid://80101722036551",
+    "LogoOk": "rbxassetid://80101722036551",
+    "LogoWarn": "rbxassetid://80101722036551",
+    "LogoError": "rbxassetid://80101722036551"
   }
 }

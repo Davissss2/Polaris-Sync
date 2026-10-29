@@ -6,7 +6,6 @@ local Util = Components.Util
 local Fusion = require(Polaris.Packages.Fusion)
 
 local Config = require(Polaris.Config)
-local Assets = require(App.Assets)
 local Theme = require(App.Theme)
 local filterHost = require(Util.filterHost)
 local filterPort = require(Util.filterPort)
@@ -156,7 +155,7 @@ return function(props: Props): { Instance }
 					end,
 				},
 				IconButton {
-					Icon = Assets.Icons.Settings,
+					Glyph = "Settings",
 					BackgroundActive = Computed(function(use)
 						return use(props.App.settingsWidget) ~= nil
 					end),
@@ -166,7 +165,7 @@ return function(props: Props): { Instance }
 					LayoutOrder = 1,
 				},
 				IconButton {
-					Icon = Assets.Icons.Help,
+					Glyph = "Help",
 					BackgroundActive = Computed(function(use)
 						return use(props.App.helpWidget) ~= nil
 					end),

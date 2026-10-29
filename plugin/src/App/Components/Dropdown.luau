@@ -8,7 +8,6 @@ local Fusion = require(Polaris.Packages.Fusion)
 local GlobalUtil = require(Polaris.Util)
 
 local Theme = require(App.Theme)
-local Assets = require(App.Assets)
 local animate = require(Util.animate)
 local stripProps = require(Util.stripProps)
 local getTextSize = require(Util.getTextSize)
@@ -18,7 +17,7 @@ local isState = require(Util.isState)
 local Container = require(Components.Container)
 local Padding = require(Components.Padding)
 local Corner = require(Components.Corner)
-local Image = require(Components.Image)
+local Glyph = require(Components.Glyph)
 local Input = require(Components.Input)
 local List = require(Components.List)
 local Box = require(Components.Box)
@@ -205,14 +204,14 @@ return function(props: Props): TextButton
 			Padding {
 				Horizontal = 6,
 			},
-			Image {
+			Glyph {
 				AnchorPoint = Vector2.new(1, 0.5),
 				Position = UDim2.fromScale(1, 0.5),
 				Size = UDim2.fromOffset(16, 16),
-				Image = Assets.Icons.Dropdown,
-				ImageColor3 = Theme.Colors.Text,
+				Glyph = "ChevronDown",
+				Color = Theme.Colors.Text,
 				ZIndex = 2,
-				ImageTransparency = Computed(function(use)
+				Transparency = Computed(function(use)
 					return use(isOpen) and 1 or 0
 				end),
 			},

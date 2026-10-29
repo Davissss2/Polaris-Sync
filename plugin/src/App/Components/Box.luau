@@ -17,6 +17,7 @@ local Children = Fusion.Children
 local COMPONENT_ONLY_PROPS = {
 	"BackgroundColor",
 	"BorderColor",
+	"BorderGradient",
 	"BackgroundTransparency",
 	"BorderTransparency",
 }
@@ -24,6 +25,7 @@ local COMPONENT_ONLY_PROPS = {
 type Props = {
 	BackgroundColor: Fusion.CanBeState<Color3>?,
 	BorderColor: Fusion.CanBeState<Color3>?,
+	BorderGradient: boolean?,
 	BackgroundTransparency: Fusion.CanBeState<number>?,
 	BorderTransparency: Fusion.CanBeState<number>?,
 	[any]: any,
@@ -38,6 +40,7 @@ return function(props: Props): Frame
 			Border {
 				Color = props.BorderColor,
 				Transparency = props.BorderTransparency,
+				Gradient = props.BorderGradient,
 			},
 		},
 	})(stripProps(props, COMPONENT_ONLY_PROPS))

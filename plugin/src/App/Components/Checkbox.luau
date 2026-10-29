@@ -5,7 +5,6 @@ local Util = Components.Util
 
 local Fusion = require(Polaris.Packages.Fusion)
 
-local Assets = require(App.Assets)
 local Theme = require(App.Theme)
 local stripProps = require(Util.stripProps)
 local isState = require(Util.isState)
@@ -38,8 +37,15 @@ return function(props: Props): TextButton
 		Size = UDim2.fromOffset(Theme.CompSizeY.Medium, Theme.CompSizeY.Medium),
 		Solid = value,
 		Blending = false,
-		Icon = Computed(function(use)
-			return if use(value) and use(placeholder) or use(placeholder) then Assets.Icons.Checkmark else ""
+		Glyph = "Check",
+		GlyphColor = Computed(function(use)
+			if use(value) then
+				return use(Theme.Colors.TextBranded)
+			elseif use(placeholder) then
+				return use(Theme.Colors.TextDimmed)
+			end
+
+			return use(Theme.Colors.Background)
 		end),
 		Activated = function()
 			value:set(not peek(value))

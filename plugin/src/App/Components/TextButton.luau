@@ -55,6 +55,18 @@ return function(props: Props): TextButton
 			return UDim2.fromOffset(size.X + 22, Theme.CompSizeY.Large)
 		end)
 
+	-- Solid buttons carry the Polaris gradient instead of a flat fill
+	local gradientColor = Computed(function(use)
+		return ColorSequence.new({
+			ColorSequenceKeypoint.new(0, use(Theme.Colors.BrandCyan)),
+			ColorSequenceKeypoint.new(1, use(Theme.Colors.BrandViolet)),
+		})
+	end)
+
+	local gradientEnabled = Computed(function(use)
+		return use(props.Solid) and true or false
+	end)
+
 	return Hydrate(New "TextButton" {
 		Text = "Button",
 		FontFace = Theme.Fonts.Regular,
@@ -86,6 +98,11 @@ return function(props: Props): TextButton
 		end,
 		[Children] = {
 			Border {},
+			New "UIGradient" {
+				Enabled = gradientEnabled,
+				Rotation = 12,
+				Color = gradientColor,
+			},
 		},
 	})(stripProps(props, COMPONENT_ONLY_PROPS))
 end
