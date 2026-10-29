@@ -78,7 +78,7 @@ pub fn init(workspace: WorkspaceConfig) -> Result<()> {
 		fs::create_dir_all(workspace_dir)?;
 	}
 
-	install_template(template, workspace_dir, &workspace, &project_name, 0)?;
+	install_template(template, workspace_dir, &workspace, project_name, 0)?;
 
 	if workspace.git {
 		initialize_repo(workspace_dir)?;
@@ -156,7 +156,12 @@ fn install_template(
 							fs::write(new_path, file.contents())?;
 						}
 					}
-					_ => match entry.path().file_stem().and_then(|stem| stem.to_str()).unwrap_or_default() {
+					_ => match entry
+						.path()
+						.file_stem()
+						.and_then(|stem| stem.to_str())
+						.unwrap_or_default()
+					{
 						"README" | "CHANGELOG" => {
 							if workspace.docs {
 								fs::write(new_path, contents().replace("$name", project_name))?;
@@ -270,7 +275,12 @@ pub fn init_ts(workspace: WorkspaceConfig) -> Result<Option<PathBuf>> {
 
 		let contents = || String::from_utf8_lossy(file.contents()).into_owned();
 
-		match entry.path().file_stem().and_then(|stem| stem.to_str()).unwrap_or_default() {
+		match entry
+			.path()
+			.file_stem()
+			.and_then(|stem| stem.to_str())
+			.unwrap_or_default()
+		{
 			"wally" if workspace.wally || workspace.template == "package" => {
 				let contents = contents()
 					.replace("$name", &project_name.to_lowercase())
@@ -279,7 +289,7 @@ pub fn init_ts(workspace: WorkspaceConfig) -> Result<Option<PathBuf>> {
 				fs::write(new_path, contents)?;
 			}
 			"README" | "CHANGELOG" if workspace.docs => {
-				fs::write(new_path, contents().replace("$name", &project_name))?;
+				fs::write(new_path, contents().replace("$name", project_name))?;
 			}
 			"LICENSE" if workspace.docs || workspace.license.force => {
 				add_license(&new_path, workspace.license.inner, &contents())?;

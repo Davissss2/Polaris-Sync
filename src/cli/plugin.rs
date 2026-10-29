@@ -26,8 +26,8 @@ enum PluginMode {
 
 impl Plugin {
 	pub fn main(self) -> Result<()> {
-		let target = util::get_plugin_path()
-			.context("Roblox Studio was not found, pass a custom installation path instead")?;
+		let target =
+			util::get_plugin_path().context("Roblox Studio was not found, pass a custom installation path instead")?;
 
 		match self.mode.unwrap_or_default() {
 			PluginMode::Install => {

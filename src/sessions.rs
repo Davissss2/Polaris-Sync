@@ -1,12 +1,7 @@
 use anyhow::{Context, Result};
 use log::{debug, trace, warn};
 use serde::{Deserialize, Serialize};
-use std::{
-	collections::HashMap,
-	fs,
-	path::PathBuf,
-	process, thread,
-};
+use std::{collections::HashMap, fs, path::PathBuf, process, thread};
 
 use crate::util;
 

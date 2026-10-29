@@ -4,7 +4,10 @@ use clap_verbosity_flag::Verbosity;
 use env_logger::fmt::WriteStyle;
 use lazy_static::lazy_static;
 use log::LevelFilter;
-use std::{env, sync::atomic::{AtomicBool, Ordering}};
+use std::{
+	env,
+	sync::atomic::{AtomicBool, Ordering},
+};
 
 use crate::util;
 
