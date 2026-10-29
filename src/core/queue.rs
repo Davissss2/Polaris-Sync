@@ -255,7 +255,9 @@ impl Queue {
 	}
 
 	fn touch(&self, id: u32) {
-		let listeners = self.listeners.write().unwrap();
+		// A read lock is enough: the stamp lives in an atomic, which is what
+		// lets a poll refresh it without taking the listeners for writing
+		let listeners = self.listeners.read().unwrap();
 
 		for listener in listeners.iter() {
 			if listener.id == id {
