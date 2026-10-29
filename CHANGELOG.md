@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- A VS Code extension (`vscode/`, packaged as `dist/polaris-0.1.0.vsix`): status
+  bar entry with the ports of the running sessions, a menu for start, stop,
+  build, new project and plugin install, and the same commands in the palette.
+  It is a thin wrapper over `polaris list --json`
 - A one file Windows installer (`dist/PolarisSetup.exe`) that installs the CLI,
   adds it to the user `PATH` and copies `Polaris.rbxm` into the Studio plugins
   folder in one step, per user and without an administrator prompt. It takes

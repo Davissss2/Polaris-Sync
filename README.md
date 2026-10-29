@@ -118,6 +118,21 @@ and aarch64.
 Already have Rust? `cargo install --git https://github.com/Davissss2/Polaris-Sync`
 also works.
 
+### Editor extension
+
+[`dist/polaris-0.1.0.vsix`](dist/polaris-0.1.0.vsix) wraps the CLI in VS Code
+(and anything that takes a `.vsix`: Cursor, VSCodium, Qoder):
+
+```
+code --install-extension dist/polaris-0.1.0.vsix
+```
+
+It adds a status bar entry with the ports of the running sessions (amber when
+one reports itself unhealthy), a menu with start, stop, build, new project,
+install plugin and session info, and the same commands in the palette. It
+reads `polaris list --json`, so it never guesses: if the CLI is not on `PATH`,
+point `polaris.executable` at it.
+
 ## Quick start
 
 ```bash
