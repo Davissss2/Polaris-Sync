@@ -58,7 +58,9 @@ polaris list --json
 polaris info ./my-game --json
 ```
 
-`list` returns every session with `project`, `address`, `pid` and `running`.
+`list` returns every session with `project`, `address`, `pid`, `running` and
+`healthy`. `healthy` is the real check: it probes the server over HTTP, so
+`running: true, healthy: false` means a hung process.
 `info` returns `services` (name to folder), `kind` (place or model) and the
 `address` of the session serving that project, if any.
 
@@ -141,6 +143,7 @@ polaris stop --all
 | `No project files found` | The path must contain `default.project.json`, or use `polaris init`. |
 | `Port is already in use` | Another project is serving it; `polaris list --json` shows ports. |
 | Changes do not appear in Studio | Is the plugin connected? Does `polaris info` report an address? |
+| `401` from the server | The session runs with `--secure`; paste the token from `~/.polaris/token` in the plugin settings. |
 | A service is missing | `polaris workspace expand`. |
 | `Cannot serve non-place project` | Only `DataModel` projects can be served. |
 | Duplicate instances | Two sources map the same path; check `$path` entries. |

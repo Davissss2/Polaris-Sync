@@ -72,7 +72,7 @@ polaris workspace expand
 | Command | What it does |
 | --- | --- |
 | `polaris init [path]` | Create a project from a template (`game`, `place`, `model`, `plugin`, `package`, `quick`, `empty`) |
-| `polaris serve [path]` | Start the local server and watch the file system |
+| `polaris serve [path]` | Start the local server and watch the file system (`--secure` requires a token) |
 | `polaris build [path]` | Build a `.rbxl` / `.rbxlx` (or `.rbxm` / `.rbxmx`) |
 | `polaris sourcemap` | Emit a JSON sourcemap of the instance tree |
 | `polaris list` | Every session with its project, address, port, PID and status |
@@ -184,6 +184,20 @@ the CLI:
 
 Drop the skill folder into your agent's skills directory (for example
 `.claude/skills/polaris`) and it will know when and how to call Polaris.
+
+## Security
+
+The server only listens on `localhost`, but by default any local process can
+talk to it. Start it with `--secure` to require a session token:
+
+```bash
+polaris serve --secure      # prints the token, also stored in ~/.polaris/token
+```
+
+Paste that token once in the plugin settings (`Session Token`). The CLI reads
+it from disk on its own, so `polaris exec`, `polaris list` and `polaris stop`
+keep working without extra flags. Without a token the server prints a warning
+on startup.
 
 ## Configuration
 

@@ -1,6 +1,6 @@
-local Argon = script:FindFirstAncestor("Argon")
+local Polaris = script:FindFirstAncestor("Polaris")
 
-local Fusion = require(Argon.Packages.Fusion)
+local Fusion = require(Polaris.Packages.Fusion)
 
 local Computed = Fusion.Computed
 

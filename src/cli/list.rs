@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use serde::Serialize;
-use std::path::Path;
+use std::{path::Path, time::Duration};
 
 use crate::{argon_info, argon_warn, cli::Cli, logger::Table, sessions, util};
 
@@ -21,18 +21,25 @@ struct SessionEntry {
 	address: Option<String>,
 	pid: u32,
 	running: bool,
+	healthy: bool,
 }
 
 impl List {
 	pub fn main(self) -> Result<()> {
 		let mut entries = sessions::get_all()?
 			.into_iter()
-			.map(|(id, session)| SessionEntry {
-				id,
-				project: session.project.as_ref().map(|path| path.to_string_lossy().to_string()),
-				address: session.get_address(),
-				pid: session.pid,
-				running: util::process_exists(session.pid),
+			.map(|(id, session)| {
+				let address = session.get_address();
+				let running = util::process_exists(session.pid);
+
+				SessionEntry {
+					healthy: running && is_responsive(address.as_deref()),
+					id,
+					project: session.project.as_ref().map(|path| path.to_string_lossy().to_string()),
+					address,
+					pid: session.pid,
+					running,
+				}
 			})
 			.filter(|entry| !self.alive || entry.running)
 			.collect::<Vec<_>>();
@@ -60,8 +67,10 @@ impl List {
 				project_name(entry.project.as_deref()),
 				entry.address.unwrap_or_else(|| String::from("-")),
 				entry.pid.to_string(),
-				if entry.running {
+				if entry.healthy {
 					String::from("running")
+				} else if entry.running {
+					String::from("unresponsive")
 				} else {
 					String::from("stopped")
 				},
@@ -79,4 +88,25 @@ fn project_name(path: Option<&str>) -> String {
 		.and_then(|path| path.file_name())
 		.map(|name| name.to_string_lossy().to_string())
 		.unwrap_or_else(|| String::from("-"))
+}
+
+/// Asks the server for its project details with a short timeout,
+/// so a process that is alive but hung is not reported as healthy
+fn is_responsive(address: Option<&str>) -> bool {
+	let Some(address) = address else {
+		return false;
+	};
+
+	let client = match reqwest::blocking::Client::builder()
+		.timeout(Duration::from_millis(800))
+		.build()
+	{
+		Ok(client) => client,
+		Err(_) => return false,
+	};
+
+	client
+		.get(format!("{address}/details"))
+		.send()
+		.is_ok_and(|response| response.status().is_success())
 }

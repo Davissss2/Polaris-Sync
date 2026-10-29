@@ -1,8 +1,8 @@
-local Argon = script:FindFirstAncestor("Argon")
-local App = Argon.App
+local Polaris = script:FindFirstAncestor("Polaris")
+local App = Polaris.App
 local Components = App.Components
 
-local Fusion = require(Argon.Packages.Fusion)
+local Fusion = require(Polaris.Packages.Fusion)
 
 local Theme = require(App.Theme)
 
@@ -23,7 +23,7 @@ return function(): Frame
 		[Children] = {
 			Padding {},
 			Text {
-				Text = "Unavailable during playtest! Return to the edit mode to continue using Argon",
+				Text = "Unavailable during playtest! Return to the edit mode to continue using Polaris",
 				TextWrapped = true,
 				Font = Theme.Fonts.Mono,
 				TextSize = Theme.TextSize.Medium,

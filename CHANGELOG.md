@@ -17,6 +17,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `polaris serve --secure`: session token required by every client that can
+  read or modify the project. The token is printed on startup, stored in
+  `~/.polaris/token` and read automatically by `exec`, `list` and `stop`
+- `Session Token` setting in the Studio plugin, sent as a bearer token
+- `healthy` field in `polaris list --json`: sessions are probed over HTTP
+  instead of trusting the process id, and hung ones show as `unresponsive`
 - `plugin/` — Polaris Studio plugin, forked from the Argon plugin and rebranded
   (tree name, toolbar, widget, settings keys, undo waypoints and
   `PolarisEmpty` marker)
@@ -42,6 +48,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Long poll timeout is now 20 seconds, below Roblox's 30 second
+  `RequestAsync` limit, so the plugin never has to abort the request
+- Plugin reconnects automatically by default (`AutoReconnect`)
+- Each client has a bounded queue; a client that stops reading is disconnected
+  instead of growing memory without bound
 - Project templates are bundled into the binary instead of being copied to the
   data directory, so they can never go stale after an update
 
@@ -55,6 +66,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Syncback no longer blocks the sync loop waiting for confirmation when there
+  is no terminal: the batch is rejected with a warning instead
+- The plugin read loop no longer retries recursively, so long sessions keep a
+  flat stack
 - Wally package nodes are now removed from generated project files by editing
   the JSON document instead of stripping lines of text
 

@@ -1,12 +1,12 @@
-local Argon = script:FindFirstAncestor("Argon")
-local App = Argon.App
+local Polaris = script:FindFirstAncestor("Polaris")
+local App = Polaris.App
 local Components = App.Components
 local Util = Components.Util
 
-local Fusion = require(Argon.Packages.Fusion)
+local Fusion = require(Polaris.Packages.Fusion)
 
-local Config = require(Argon.Config)
-local GlobalUtil = require(Argon.Util)
+local Config = require(Polaris.Config)
+local GlobalUtil = require(Polaris.Util)
 
 local Theme = require(App.Theme)
 local default = require(Util.default)
@@ -66,6 +66,11 @@ local SETTINGS_DATA: { { Title: string, Settings: { SettingData } } } = {
 				Description = "The port of the server that you want to connect to",
 				Filter = filterPort,
 				CustomWidth = 70,
+			},
+			{
+				Setting = "Token",
+				Name = "Session Token",
+				Description = "Token printed by `polaris serve --secure`. Leave empty when the server does not require it",
 			},
 		},
 	},
@@ -355,7 +360,7 @@ return function(props: Props): DockWidgetPluginGui
 	local bindings = {}
 
 	return Widget {
-		Name = "Argon - Settings",
+		Name = "Polaris - Settings",
 		OverrideEnabled = true,
 		MinimumSize = Vector2.new(350, 400),
 		Closed = props.Closed,

@@ -1,12 +1,12 @@
-local Argon = script:FindFirstAncestor("Argon")
+local Polaris = script:FindFirstAncestor("Polaris")
 
-local Dom = require(Argon.Lib.Dom)
+local Dom = require(Polaris.Lib.Dom)
 
-local Log = require(Argon.Log)
-local Util = require(Argon.Util)
-local Types = require(Argon.Types)
-local Config = require(Argon.Config)
-local equals = require(Argon.Helpers.equals)
+local Log = require(Polaris.Log)
+local Util = require(Polaris.Util)
+local Types = require(Polaris.Types)
+local Config = require(Polaris.Config)
+local equals = require(Polaris.Helpers.equals)
 
 local Error = require(script.Parent.Error)
 local Changes = require(script.Parent.Changes)

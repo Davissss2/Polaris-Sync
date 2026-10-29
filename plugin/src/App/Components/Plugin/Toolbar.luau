@@ -1,11 +1,11 @@
 local plugin = script:FindFirstAncestorWhichIsA("Plugin")
 
-local Argon = script:FindFirstAncestor("Argon")
-local App = Argon.App
+local Polaris = script:FindFirstAncestor("Polaris")
+local App = Polaris.App
 local Components = App.Components
 local Util = Components.Util
 
-local Fusion = require(Argon.Packages.Fusion)
+local Fusion = require(Polaris.Packages.Fusion)
 
 local stripProps = require(Util.stripProps)
 

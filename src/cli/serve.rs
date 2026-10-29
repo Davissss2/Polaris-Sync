@@ -13,7 +13,7 @@ use crate::{
 	program::{Program, ProgramName},
 	project::{self, Project},
 	server::{self, Server},
-	sessions,
+	sessions, util,
 };
 
 /// Start local server and listen for file changes
@@ -43,9 +43,13 @@ pub struct Serve {
 	#[arg(short, long)]
 	ts: bool,
 
-	/// Run Argon asynchronously
+	/// Run Polaris asynchronously
 	#[arg(short = 'A', long = "async")]
 	run_async: bool,
+
+	/// Require a session token from clients that can modify the project
+	#[arg(long)]
+	secure: bool,
 
 	/// Spawn the Polaris child process (internal)
 	#[arg(long, hide = true)]
@@ -165,7 +169,25 @@ impl Serve {
 			Some(project_path.clone()),
 		)?;
 
-		let server = Server::new(core, &host, port);
+		let token = if self.secure {
+			let token = util::get_or_create_token()?;
+
+			argon_info!(
+				"Session token: {}. Paste it in the Polaris plugin settings",
+				token.bold()
+			);
+
+			Some(token)
+		} else {
+			argon_warn!(
+				"Session is open: any local process can control it. Run {} to require a token",
+				"polaris serve --secure".bold()
+			);
+
+			None
+		};
+
+		let server = Server::new(core, &host, port, token);
 
 		argon_info!(
 			"Serving on: {}, project: {}",
@@ -205,6 +227,10 @@ impl Serve {
 
 		if self.ts {
 			args.push("--ts".into());
+		}
+
+		if self.secure {
+			args.push("--secure".into());
 		}
 
 		Program::new(ProgramName::Polaris).args(args).spawn()?;

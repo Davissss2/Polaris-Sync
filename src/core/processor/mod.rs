@@ -4,13 +4,14 @@ use crossbeam_channel::{select, Sender};
 use log::{debug, error, info, trace, warn};
 use serde::Deserialize;
 use std::{
+	io::IsTerminal,
 	sync::{Arc, Mutex},
 	thread::Builder,
 };
 
 use super::{changes::Changes, queue::Queue, tree::Tree};
 use crate::{
-	argon_error,
+	argon_error, argon_warn,
 	config::Config,
 	constants::BLACKLISTED_PATHS,
 	lock, logger,
@@ -182,15 +183,26 @@ impl Handler {
 		trace!("Received client event: {:?} changes", changes.total());
 
 		if changes.total() > Config::new().changes_threshold {
-			let accept = logger::prompt(
-				&format!(
-					"You are about to apply {}, {} and {}. Do you want to continue?",
-					format!("{} additions", changes.additions.len()).bold().green(),
-					format!("{} updates", changes.updates.len()).bold().blue(),
-					format!("{} removals", changes.removals.len()).bold().red(),
-				),
-				true,
-			);
+			// Never block the sync loop waiting for a human when there is no
+			// terminal attached, the batch is rejected instead
+			let accept = if std::io::stdin().is_terminal() {
+				logger::prompt(
+					&format!(
+						"You are about to apply {}, {} and {}. Do you want to continue?",
+						format!("{} additions", changes.additions.len()).bold().green(),
+						format!("{} updates", changes.updates.len()).bold().blue(),
+						format!("{} removals", changes.removals.len()).bold().red(),
+					),
+					true,
+				)
+			} else {
+				argon_warn!(
+					"Rejected {} changes from the client: above changes_threshold and no terminal to confirm",
+					changes.total().to_string().bold()
+				);
+
+				false
+			};
 
 			if !accept {
 				trace!(

@@ -1,11 +1,14 @@
 use actix_msgpack::MsgPack;
-use actix_web::{post, web::Data, HttpResponse, Responder};
+use actix_web::{post, web::Data, HttpRequest, HttpResponse};
 use log::trace;
 use rbx_dom_weak::types::Ref;
 use serde::Deserialize;
 use std::sync::Arc;
 
-use crate::core::Core;
+use crate::{
+	core::Core,
+	server::{self, Auth},
+};
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -15,8 +18,17 @@ struct Request {
 }
 
 #[post("/open")]
-async fn main(request: MsgPack<Request>, core: Data<Arc<Core>>) -> impl Responder {
+async fn main(
+	http_request: HttpRequest,
+	request: MsgPack<Request>,
+	core: Data<Arc<Core>>,
+	auth: Data<Auth>,
+) -> HttpResponse {
 	trace!("Received request: open");
+
+	if let Some(response) = server::unauthorized(&http_request, &auth) {
+		return response;
+	}
 
 	match core.open(request.instance) {
 		Ok(_) => HttpResponse::Ok().body("Opened file successfully"),

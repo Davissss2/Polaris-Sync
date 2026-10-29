@@ -1,7 +1,8 @@
 use actix_msgpack::MsgPackConfig;
 use actix_web::{
+	http::header,
 	web::{self, Data},
-	App, HttpServer, Responder,
+	App, HttpRequest, HttpResponse, HttpServer, Responder,
 };
 use derive_from_one::FromOne;
 use serde::{Deserialize, Serialize};
@@ -68,20 +69,23 @@ pub struct Server {
 	core: Arc<Core>,
 	host: String,
 	port: u16,
+	token: Option<String>,
 }
 
 impl Server {
-	pub fn new(core: Arc<Core>, host: &str, port: u16) -> Self {
+	pub fn new(core: Arc<Core>, host: &str, port: u16, token: Option<String>) -> Self {
 		Self {
 			core,
 			host: host.to_owned(),
 			port,
+			token,
 		}
 	}
 
 	#[actix_web::main]
 	pub async fn start(&self) -> Result<()> {
 		let core = self.core.clone();
+		let auth = Data::new(Auth::new(self.token.clone()));
 
 		HttpServer::new(move || {
 			let mut msgpack_config = MsgPackConfig::default();
@@ -89,6 +93,7 @@ impl Server {
 
 			App::new()
 				.app_data(Data::new(core.clone()))
+				.app_data(auth.clone())
 				.app_data(msgpack_config)
 				.service(details::main)
 				.service(subscribe::main)
@@ -116,6 +121,48 @@ impl Server {
 
 pub fn is_port_free(host: &str, port: u16) -> bool {
 	TcpListener::bind((host, port)).is_ok()
+}
+
+/// Session token used to authenticate clients that can modify the project
+#[derive(Clone, Debug)]
+pub struct Auth {
+	token: Option<String>,
+}
+
+impl Auth {
+	pub fn new(token: Option<String>) -> Self {
+		Self { token }
+	}
+
+	/// Whether a token is required. Without one, any local process can
+	/// talk to the server, which is why `serve --secure` exists
+	pub fn is_enabled(&self) -> bool {
+		self.token.is_some()
+	}
+
+	pub fn check(&self, request: &HttpRequest) -> bool {
+		let Some(expected) = &self.token else {
+			return true;
+		};
+
+		request
+			.headers()
+			.get(header::AUTHORIZATION)
+			.and_then(|value| value.to_str().ok())
+			.map(|value| value.strip_prefix("Bearer ").unwrap_or(value))
+			.is_some_and(|value| value == expected)
+	}
+}
+
+/// Returns a `401` response when the request is not authorized
+pub fn unauthorized(request: &HttpRequest, auth: &Auth) -> Option<HttpResponse> {
+	if auth.check(request) {
+		return None;
+	}
+
+	Some(HttpResponse::Unauthorized().body(
+		"Missing or invalid session token. Copy the token printed by `polaris serve --secure` into the Polaris plugin settings",
+	))
 }
 
 pub fn get_free_port(host: &str, port: u16) -> u16 {

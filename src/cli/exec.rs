@@ -1,10 +1,13 @@
 use anyhow::Result;
 use clap::Parser;
-use reqwest::{blocking::Client, header::CONTENT_TYPE};
+use reqwest::{
+	blocking::Client,
+	header::{AUTHORIZATION, CONTENT_TYPE},
+};
 use serde::Serialize;
 use std::{fs, path::Path};
 
-use crate::{argon_error, argon_info, ext::PathExt, sessions};
+use crate::{argon_error, argon_info, ext::PathExt, sessions, util};
 
 /// Execute Luau code in Roblox Studio (requires running session)
 #[derive(Parser)]
@@ -59,6 +62,7 @@ impl Exec {
 
 			if let Some(address) = address {
 				let url = format!("{address}/exec");
+				let token = util::read_token().unwrap_or_default();
 
 				let body = rmp_serde::to_vec(&Request {
 					code: code.to_owned(),
@@ -72,6 +76,7 @@ impl Exec {
 				let response = Client::default()
 					.post(url)
 					.header(CONTENT_TYPE, "application/msgpack")
+					.header(AUTHORIZATION, format!("Bearer {}", token))
 					.body(body)
 					.send();
 

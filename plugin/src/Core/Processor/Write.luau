@@ -1,13 +1,13 @@
-local Argon = script:FindFirstAncestor("Argon")
+local Polaris = script:FindFirstAncestor("Polaris")
 
-local Dom = require(Argon.Lib.Dom)
+local Dom = require(Polaris.Lib.Dom)
 
-local Log = require(Argon.Log)
-local Types = require(Argon.Types)
-local Config = require(Argon.Config)
+local Log = require(Polaris.Log)
+local Types = require(Polaris.Types)
+local Config = require(Polaris.Config)
 
-local equals = require(Argon.Helpers.equals)
-local setWaypoint = require(Argon.Helpers.setWaypoint)
+local equals = require(Polaris.Helpers.equals)
+local setWaypoint = require(Polaris.Helpers.setWaypoint)
 
 local Error = require(script.Parent.Parent.Error)
 
@@ -15,6 +15,8 @@ local MESH_RELOAD_PROPERTIES = { "MeshContent", "InitialSize" }
 
 local function loadMesh(path: string): MeshPart?
 	local success, mesh = pcall(function()
+		-- These templates ship with the upstream installer as `rbxasset://argon/*`.
+		-- Vendor equivalent assets and update this path when Polaris ships its own
 		return game:GetObjects("rbxasset://argon/" .. path)[1]
 	end)
 

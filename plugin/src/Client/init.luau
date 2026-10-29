@@ -102,20 +102,28 @@ function Client:read(): Promise.TypedPromise<Types.Message>
 
 	local url = self:getUrl("read")
 
-	return Http.post(url, {
-		clientId = self.clientId,
-	})
-		:andThen(function(response)
-			return response:decode()
-		end)
-		:catch(function(err)
-			-- We don't need to handle this as Rust queue uses `recv_timeout`
-			if err == Error.Timedout then
-				return self:read()
-			else
-				return Promise.reject(err)
-			end
-		end)
+	return Promise.new(function(resolve, reject)
+		local function attempt()
+			Http.post(url, {
+				clientId = self.clientId,
+			})
+				:andThen(function(response)
+					resolve(response:decode())
+				end)
+				:catch(function(err)
+					-- The server answers an empty message once its long poll expires,
+					-- so a timeout only means that nothing changed yet. Deferring the
+					-- retry keeps the stack flat during long sessions
+					if err == Error.Timedout then
+						task.defer(attempt)
+					else
+						reject(err)
+					end
+				end)
+		end
+
+		attempt()
+	end)
 end
 
 function Client:write(changes: Types.Changes): Promise.Promise

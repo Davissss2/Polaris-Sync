@@ -4,6 +4,7 @@ local Polaris = script:FindFirstAncestor("Polaris")
 
 local Promise = require(Polaris.Packages.Promise)
 local MsgPack = require(Polaris.Lib.MsgPack)
+local Config = require(Polaris.Config)
 
 local Error = require(script.Parent.Error)
 
@@ -26,15 +27,31 @@ local function methodify(response: { [string]: any }): any
 	})
 end
 
+local function getHeaders(): { [string]: string }
+	local headers = {
+		["Content-Type"] = "application/msgpack",
+	}
+
+	-- The token is optional, servers started without `--secure` accept clients
+	-- without it. Wrapped because Config may not be loaded yet on first use
+	local ok, token = pcall(function()
+		return Config:get("Token")
+	end)
+
+	if ok and type(token) == "string" and token ~= "" then
+		headers.Authorization = "Bearer " .. token
+	end
+
+	return headers
+end
+
 local function request(method: string, url: string, body: { [string]: any }?): Promise.TypedPromise<Response>
 	return Promise.new(function(resolve, reject)
 		local success, response = pcall(function()
 			return HttpService:RequestAsync({
 				Url = url,
 				Method = method,
-				Headers = {
-					["Content-Type"] = "application/msgpack",
-				},
+				Headers = getHeaders(),
 				Body = body and MsgPack.encode(body) or nil,
 			})
 		end)

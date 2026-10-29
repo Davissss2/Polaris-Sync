@@ -1,12 +1,12 @@
 local StudioService = game:GetService("StudioService")
 
-local Argon = script:FindFirstAncestor("Argon")
-local App = Argon.App
+local Polaris = script:FindFirstAncestor("Polaris")
+local App = Polaris.App
 local Components = App.Components
 
-local Fusion = require(Argon.Packages.Fusion)
+local Fusion = require(Polaris.Packages.Fusion)
 
-local Types = require(Argon.Types)
+local Types = require(Polaris.Types)
 local Theme = require(App.Theme)
 
 local Widget = require(Components.Plugin.Widget)
@@ -124,7 +124,7 @@ type Props = {
 
 return function(props: Props): DockWidgetPluginGui
 	return Widget {
-		Name = "Argon - Project",
+		Name = "Polaris - Project",
 		OverrideEnabled = true,
 		MinimumSize = Vector2.new(400, 300),
 		Closed = props.Closed,

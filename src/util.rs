@@ -9,6 +9,7 @@ use rbx_reflection::{ClassTag, ReflectionDatabase};
 use roblox_install::RobloxStudio;
 use serde::Serialize;
 use std::{env, fs, path::PathBuf, process::Command};
+use uuid::Uuid;
 
 use crate::{ext::ResultExt, Properties};
 
@@ -30,6 +31,38 @@ pub fn get_data_dir() -> Result<PathBuf> {
 	}
 
 	Ok(data_dir)
+}
+
+/// Returns the session token, creating one on first use
+pub fn get_or_create_token() -> Result<String> {
+	if let Some(token) = read_token() {
+		return Ok(token);
+	}
+
+	let path = get_data_dir()?.join("token");
+	let token = Uuid::new_v4().simple().to_string();
+	let token = token[..16].to_owned();
+
+	fs::write(&path, &token)?;
+
+	Ok(token)
+}
+
+/// Reads the session token if one has been created already
+pub fn read_token() -> Option<String> {
+	let path = get_data_dir().ok()?.join("token");
+
+	if !path.exists() {
+		return None;
+	}
+
+	let token = fs::read_to_string(path).ok()?.trim().to_owned();
+
+	if token.is_empty() {
+		None
+	} else {
+		Some(token)
+	}
 }
 
 /// Returns the Git or local username of the current user

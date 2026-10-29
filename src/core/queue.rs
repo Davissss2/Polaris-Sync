@@ -6,7 +6,7 @@ use std::{collections::HashMap, sync::RwLock};
 use crate::{
 	argon_warn,
 	config::Config,
-	constants::QUEUE_TIMEOUT,
+	constants::{MAX_QUEUED_MESSAGES, QUEUE_TIMEOUT},
 	server::{self, Message},
 };
 
@@ -70,14 +70,25 @@ impl Queue {
 
 		let message: Message = message.into();
 		let mut did_push = false;
+		let mut failed = Vec::new();
 
 		for listener in read!(self.listeners).iter() {
 			let queues = read!(self.queues);
-			let sender = queues.get(&listener.id).unwrap().sender.clone();
 
-			sender.send(message.clone())?;
+			if let Some(channel) = queues.get(&listener.id) {
+				// Never block the sync loop on a client that stopped reading
+				if channel.sender.try_send(message.clone()).is_err() {
+					failed.push(listener.id);
+				}
 
-			did_push = true;
+				did_push = true;
+			}
+		}
+
+		for id in failed {
+			argon_warn!("Client {id} is not consuming changes, disconnecting it");
+
+			let _ = self.unsubscribe(id);
 		}
 
 		if !did_push {
@@ -147,7 +158,7 @@ impl Queue {
 			bail!("Already subscribed")
 		}
 
-		let (sender, receiver) = crossbeam_channel::unbounded();
+		let (sender, receiver) = crossbeam_channel::bounded(MAX_QUEUED_MESSAGES);
 		let channel = Channel { sender, receiver };
 
 		let listener = Listener {
@@ -173,7 +184,7 @@ impl Queue {
 			id += 1;
 		}
 
-		let (sender, receiver) = crossbeam_channel::unbounded();
+		let (sender, receiver) = crossbeam_channel::bounded(MAX_QUEUED_MESSAGES);
 		let channel = Channel { sender, receiver };
 
 		let listener = Listener {

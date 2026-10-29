@@ -1,13 +1,13 @@
-local Argon = script:FindFirstAncestor("Argon")
-local App = Argon.App
+local Polaris = script:FindFirstAncestor("Polaris")
+local App = Polaris.App
 local Widgets = App.Widgets
 local Components = App.Components
 
-local Fusion = require(Argon.Packages.Fusion)
-local Dom = require(Argon.Lib.Dom)
+local Fusion = require(Polaris.Packages.Fusion)
+local Dom = require(Polaris.Lib.Dom)
 
-local GlobalUtil = require(Argon.Util)
-local Types = require(Argon.Types)
+local GlobalUtil = require(Polaris.Util)
+local Types = require(Polaris.Types)
 local Theme = require(App.Theme)
 local Assets = require(App.Assets)
 
@@ -463,7 +463,7 @@ return function(props: Props): DockWidgetPluginGui
 	end
 
 	return Widget {
-		Name = "Argon - Diff",
+		Name = "Polaris - Diff",
 		OverrideEnabled = true,
 		MinimumSize = Vector2.new(500, 400),
 		Closed = props.Closed,

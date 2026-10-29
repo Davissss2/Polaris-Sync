@@ -1,8 +1,8 @@
-local Argon = script:FindFirstAncestor("Argon")
-local App = Argon.App
+local Polaris = script:FindFirstAncestor("Polaris")
+local App = Polaris.App
 local Components = App.Components
 
-local Fusion = require(Argon.Packages.Fusion)
+local Fusion = require(Polaris.Packages.Fusion)
 
 local Theme = require(App.Theme)
 
@@ -82,7 +82,7 @@ type Props = {
 
 return function(props: Props): DockWidgetPluginGui
 	return Widget {
-		Name = "Argon - Help",
+		Name = "Polaris - Help",
 		OverrideEnabled = true,
 		MinimumSize = Vector2.new(400, 350),
 		Closed = props.Closed,
@@ -99,15 +99,15 @@ return function(props: Props): DockWidgetPluginGui
 					Padding {
 						Padding = Theme.WidgetPadding,
 					},
-					Link("Visit official website to learn more:", "https://argon.wiki"),
+					Link("Visit the project page to learn more:", "https://github.com/Davissss2/Polaris-Sync"),
 					Entry {
 						Header "1. Setting up the project",
-						Paragraph "First you need to create new Argon project. If you are using CLI run <b>argon init</b> command.",
-						Paragraph "If you are using VS Code extension open command palette (ctrl/cmd + shift + P) and run <b>Argon: Open Menu</b> -> <b>Init</b>.",
+						Paragraph "First you need to create new Polaris project. If you are using CLI run <b>polaris init</b> command.",
+						Paragraph "If you are using VS Code extension open command palette (ctrl/cmd + shift + P) and run <b>Polaris: Open Menu</b> -> <b>Init</b>.",
 					},
 					Entry {
 						Header "2. Starting the server",
-						Paragraph "To start the server run <b>argon serve</b> command in your terminal or use <b>Argon: Open Menu</b> -> <b>Serve</b> command in VS Code.",
+						Paragraph "To start the server run <b>polaris serve</b> command in your terminal or use <b>Polaris: Open Menu</b> -> <b>Serve</b> command in VS Code.",
 					},
 					Entry {
 						Header "3. Connecting to the server",

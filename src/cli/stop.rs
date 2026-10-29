@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use colored::Colorize;
-use reqwest::blocking::Client;
+use reqwest::{blocking::Client, header::AUTHORIZATION};
 
 use crate::{argon_info, argon_warn, logger::Table, sessions, util};
 
@@ -111,7 +111,15 @@ impl Stop {
 	fn make_request(address: &String, pid: u32) {
 		let url = format!("{address}/stop");
 
-		match Client::new().post(url).send() {
+		let response = match util::read_token() {
+			Some(token) => Client::new()
+				.post(&url)
+				.header(AUTHORIZATION, format!("Bearer {token}"))
+				.send(),
+			None => Client::new().post(&url).send(),
+		};
+
+		match response {
 			Ok(_) => argon_info!("Stopped Polaris session with address: {}", address.bold()),
 			Err(_) => {
 				Self::kill_process(pid);

@@ -1,14 +1,14 @@
-local Argon = script:FindFirstAncestor("Argon")
-local App = Argon.App
+local Polaris = script:FindFirstAncestor("Polaris")
+local App = Polaris.App
 local Components = App.Components
 local Util = Components.Util
 
-local Fusion = require(Argon.Packages.Fusion)
-local Highlighter = require(Argon.Packages.Highlighter)
-local Differ = require(Argon.Lib.Differ)
+local Fusion = require(Polaris.Packages.Fusion)
+local Highlighter = require(Polaris.Packages.Highlighter)
+local Differ = require(Polaris.Lib.Differ)
 
-local GlobalUtil = require(Argon.Util)
-local Config = require(Argon.Config)
+local GlobalUtil = require(Polaris.Util)
+local Config = require(Polaris.Config)
 local Theme = require(App.Theme)
 local getTextSize = require(Util.getTextSize)
 
@@ -74,7 +74,7 @@ return function(props: Props): DockWidgetPluginGui
 	).X + Theme.Padding
 
 	return Widget {
-		Name = `Argon - Script Diff ({props.Name})`,
+		Name = `Polaris - Script Diff ({props.Name})`,
 		OverrideEnabled = true,
 		MinimumSize = Vector2.new(700, 500),
 		Closed = props.Closed,

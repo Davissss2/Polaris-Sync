@@ -19,8 +19,15 @@ pub const MAX_PAYLOAD_SIZE: usize = 536_870_912;
 
 /// How long the server should wait for the changes to
 /// appear in the queue before manually "timing out"
-/// the client request and sending back an empty `Changes`
-pub const QUEUE_TIMEOUT: Duration = Duration::from_secs(60);
+/// the client request and sending back an empty `Changes`.
+/// Kept below Roblox's 30 second `RequestAsync` timeout so the
+/// plugin never has to abort the request itself
+pub const QUEUE_TIMEOUT: Duration = Duration::from_secs(20);
+
+/// Maximum number of messages buffered for a single client.
+/// A client that stops reading is disconnected instead of
+/// growing the server memory without bound
+pub const MAX_QUEUED_MESSAGES: usize = 256;
 
 // VFS events will be ignored for this amount of time
 // after the last change that has been made by the client,

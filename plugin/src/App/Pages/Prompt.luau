@@ -1,10 +1,10 @@
-local Argon = script:FindFirstAncestor("Argon")
-local App = Argon.App
+local Polaris = script:FindFirstAncestor("Polaris")
+local App = Polaris.App
 local Components = App.Components
 local Util = Components.Util
 
-local Fusion = require(Argon.Packages.Fusion)
-local Signal = require(Argon.Packages.Signal)
+local Fusion = require(Polaris.Packages.Fusion)
+local Signal = require(Polaris.Packages.Signal)
 
 local Theme = require(App.Theme)
 local getTextSize = require(Util.getTextSize)
