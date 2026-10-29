@@ -106,9 +106,13 @@ jobs:
       - name: Setup Aftman
         uses: ok-nick/setup-aftman@v0.4.2
 
+      - name: Install toolchain
+        working-directory: plugin
+        run: aftman install --no-trust-check
+
       - name: Install packages
         working-directory: plugin
-        run: aftman install --no-trust-check && wally install
+        run: wally install
 
       - name: Build plugin
         run: ./target/release/polaris build plugin

@@ -49,9 +49,13 @@ jobs:
       - name: Setup Aftman
         uses: ok-nick/setup-aftman@v0.4.2
 
+      - name: Install toolchain
+        working-directory: plugin
+        run: aftman install --no-trust-check
+
       - name: Install packages
         working-directory: plugin
-        run: aftman install --no-trust-check && wally install
+        run: wally install
 
       # Rojo skips `src/Lib/Dom/database.msgpack` and produces a plugin that
       # dies on load, so this check builds it with the CLI on purpose
