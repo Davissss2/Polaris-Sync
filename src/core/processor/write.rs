@@ -619,7 +619,10 @@ pub fn apply_update(snapshot: UpdatedSnapshot, tree: &mut Tree, vfs: &Vfs) -> Re
 		// changes made in Studio cannot be written back into them, so the
 		// change is dropped with a warning instead of taking the server down
 		SourceKind::None => {
-			warn!("Attempted to update instance with no source: {:?}. Skipping", snapshot.id);
+			warn!(
+				"Attempted to update instance with no source: {:?}. Skipping",
+				snapshot.id
+			);
 			return Ok(());
 		}
 	}
