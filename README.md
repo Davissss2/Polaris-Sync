@@ -133,6 +133,16 @@ install plugin and session info, and the same commands in the palette. It
 reads `polaris list --json`, so it never guesses: if the CLI is not on `PATH`,
 point `polaris.executable` at it.
 
+It is published on [Open VSX](https://open-vsx.org/extension/Davissss2/polaris),
+which covers VSCodium, Gitpod and other editors that read that registry:
+
+```
+code --install-extension Davissss2.polaris
+```
+
+VS Code itself uses the Microsoft Marketplace, where it still has to be
+uploaded separately; until then the `.vsix` above installs everywhere.
+
 ## Quick start
 
 ```bash
