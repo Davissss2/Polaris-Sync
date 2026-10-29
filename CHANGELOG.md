@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- A VS Code extension (`vscode/`, packaged as `dist/polaris-0.1.1.vsix`): status
+- A VS Code extension (`vscode/`, packaged as `dist/polaris-0.2.0.vsix`): status
   bar entry with the ports of the running sessions, a menu for start, stop,
   build, new project and plugin install, and the same commands in the palette.
   It is a thin wrapper over `polaris list --json`

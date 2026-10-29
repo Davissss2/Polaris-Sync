@@ -64,6 +64,33 @@ async function sessions() {
 	}
 }
 
+// A session belongs to this window only when its project file lives inside one
+// of the open folders, which keeps two editors with two places apart
+function belongsToWorkspace(session) {
+	if (!session.project) {
+		return false;
+	}
+
+	const target = path.resolve(session.project).toLowerCase();
+	const folders = vscode.workspace.workspaceFolders || [];
+
+	return folders.some((folder) => {
+		const root = path.resolve(folder.uri.fsPath).toLowerCase();
+
+		return target === root || target.startsWith(root.endsWith(path.sep) ? root : root + path.sep);
+	});
+}
+
+async function mySessions() {
+	const all = await sessions();
+
+	return all.filter(belongsToWorkspace);
+}
+
+function projectName(session) {
+	return path.basename(path.dirname(session.project || ""));
+}
+
 function workspaceRoot() {
 	const folders = vscode.workspace.workspaceFolders;
 	return folders && folders.length ? folders[0].uri.fsPath : undefined;
@@ -163,10 +190,9 @@ async function start() {
 		return;
 	}
 
-	const running = await sessions();
-	const match = running.find(
-		(session) => session.project && path.resolve(session.project) === path.resolve(path.join(project, PROJECT_FILE))
-	);
+	const wanted = path.resolve(path.join(project, PROJECT_FILE)).toLowerCase();
+	const running = await mySessions();
+	const match = running.find((session) => session.project && path.resolve(session.project).toLowerCase() === wanted);
 
 	if (match) {
 		vscode.window.showInformationMessage(
@@ -189,18 +215,23 @@ async function start() {
 }
 
 async function stop() {
-	const running = await sessions();
+	const mine = await mySessions();
+	const others = (await sessions()).length - mine.length;
 
-	if (running.length === 0) {
-		vscode.window.showInformationMessage("No Polaris session is running.");
+	if (mine.length === 0) {
+		const detail = others
+			? ` There ${others === 1 ? "is 1 session" : `are ${others} sessions`} from another window, left alone.`
+			: "";
+
+		vscode.window.showInformationMessage(`No Polaris session is running for this workspace.${detail}`);
 
 		return;
 	}
 
 	const label =
-		running.length === 1
-			? `Stop the session on port ${portOf(running[0])}?`
-			: `Stop ${running.length} Polaris sessions?`;
+		mine.length === 1
+			? `Stop the session for ${projectName(mine[0])} on port ${portOf(mine[0])}?`
+			: `Stop ${mine.length} sessions of this workspace?`;
 
 	const confirmed = await vscode.window.showWarningMessage(label, { modal: true }, "Stop");
 
@@ -208,13 +239,20 @@ async function stop() {
 		return;
 	}
 
-	const result = await run(["stop", "--all", "--yes"]);
+	// One id per session: `--all` would take down the other editor's server too
+	for (const session of mine) {
+		const result = await run(["stop", String(session.id), "--yes"]);
 
-	if (result.ok) {
-		vscode.window.showInformationMessage("Polaris sessions stopped.");
-	} else {
-		vscode.window.showErrorMessage(`Could not stop Polaris: ${result.stderr || result.message}`);
+		if (!result.ok) {
+			vscode.window.showErrorMessage(
+				`Could not stop ${projectName(session)}: ${result.stderr || result.message}`
+			);
+		}
 	}
+
+	vscode.window.showInformationMessage(
+		mine.length === 1 ? "Polaris session stopped." : `${mine.length} Polaris sessions stopped.`
+	);
 
 	refresh();
 }
@@ -283,42 +321,61 @@ async function installPlugin() {
 }
 
 async function sessionInfo() {
-	const running = await sessions();
+	const all = await sessions();
+	const mine = all.filter(belongsToWorkspace);
+	const others = all.filter((session) => !belongsToWorkspace(session));
 
 	output.clear();
+	output.appendLine(`workspace ${workspaceRoot() || "(none)"}`);
+	output.appendLine("");
 
-	if (running.length === 0) {
-		output.appendLine("No Polaris session is running.");
-
-		const choice = await vscode.window.showInformationMessage("No Polaris session is running.", "Start Server");
-
-		if (choice === "Start Server") {
-			await start();
-		} else {
-			output.show();
-		}
-
-		return;
+	if (mine.length === 0) {
+		output.appendLine("No Polaris session is running for this workspace.");
+		output.appendLine("");
+	} else {
+		output.appendLine("this workspace:");
+		appendSessions(mine);
 	}
 
-	for (const session of running) {
-		output.appendLine(`session ${session.id}`);
-		output.appendLine(`  project ${session.project}`);
-		output.appendLine(`  address ${session.address}`);
-		output.appendLine(`  pid     ${session.pid}`);
-		output.appendLine(`  health  ${session.healthy ? "ok" : "unhealthy"}`);
-		output.appendLine("");
+	if (others.length > 0) {
+		output.appendLine("other windows (left alone):");
+		appendSessions(others);
 	}
 
 	output.show();
+
+	if (mine.length === 0) {
+		const choice = await vscode.window.showInformationMessage(
+			"No Polaris session is running for this workspace.",
+			"Start Server"
+		);
+
+		if (choice === "Start Server") {
+			await start();
+		}
+	}
+}
+
+function appendSessions(list) {
+	for (const session of list) {
+		output.appendLine(`  session ${session.id}  (${projectName(session)})`);
+		output.appendLine(`    project ${session.project}`);
+		output.appendLine(`    address ${session.address}`);
+		output.appendLine(`    pid     ${session.pid}`);
+		output.appendLine(`    health  ${session.healthy ? "ok" : "unhealthy"}`);
+	}
+
+	output.appendLine("");
 }
 
 async function openMenu() {
-	const running = await sessions();
+	const all = await sessions();
+	const mine = all.filter(belongsToWorkspace);
+	const outside = all.length - mine.length;
 	const project = findProjects()[0];
-	const state = running.length
-		? `$(radio-tower) ${running.length} session${running.length > 1 ? "s" : ""} running`
-		: "$(circle-slash) no session";
+	const state = mine.length
+		? `$(radio-tower) ${mine.map((session) => `${projectName(session)}:${portOf(session)}`).join(", ")}`
+		: "$(circle-slash) none for this workspace";
 
 	const items = [
 		{
@@ -328,7 +385,7 @@ async function openMenu() {
 		},
 		{
 			label: "$(debug-stop) Stop server",
-			description: state,
+			description: mine.length ? state : outside ? `${outside} running elsewhere, left alone` : "nothing to stop",
 			action: stop,
 		},
 		{
@@ -370,30 +427,43 @@ async function refresh() {
 		return;
 	}
 
-	const running = await sessions();
+	// Nothing to show when this window is not a Polaris project: no status bar
+	// in unrelated workspaces
+	if (findProjects().length === 0) {
+		statusBar.hide();
 
-	if (running.length === 0) {
+		return;
+	}
+
+	statusBar.show();
+
+	const all = await sessions();
+	const mine = all.filter(belongsToWorkspace);
+	const outside = all.length - mine.length;
+
+	if (mine.length === 0) {
 		statusBar.text = "$(circle-slash) Polaris";
-		statusBar.tooltip = "No Polaris session running. Click to start one.";
+		statusBar.tooltip = outside
+			? `No Polaris session for this workspace.\n${outside} running from another window, left alone.\nClick to start one.`
+			: "No Polaris session running for this workspace. Click to start one.";
 		statusBar.backgroundColor = undefined;
 
 		return;
 	}
 
-	const unhealthy = running.some((session) => !session.healthy);
-	const ports = running.map(portOf).join(", ");
+	const unhealthy = mine.some((session) => !session.healthy);
 
-	statusBar.text = `$(radio-tower) Polaris ${ports}`;
-	statusBar.tooltip = running
+	statusBar.text = `$(radio-tower) Polaris ${mine.map(portOf).join(", ")}`;
+	statusBar.tooltip = mine
 		.map(
 			(session) =>
-				`${session.project}\n${session.address}${session.healthy ? "" : " (unhealthy)"}\npid ${session.pid}`
+				`${projectName(session)} · ${vscode.workspace.asRelativePath(session.project)}\n${session.address}${
+					session.healthy ? "" : " (unhealthy)"
+				}\npid ${session.pid}`
 		)
 		.join("\n\n");
 
-	statusBar.backgroundColor = unhealthy
-		? new vscode.ThemeColor("statusBarItem.warningBackground")
-		: undefined;
+	statusBar.backgroundColor = unhealthy ? new vscode.ThemeColor("statusBarItem.warningBackground") : undefined;
 }
 
 function activate(context) {

@@ -14,6 +14,27 @@ sessions without leaving the editor.
 The extension is a thin wrapper around the CLI: it never reimplements the sync,
 it runs `polaris` and reads `polaris list --json`.
 
+## Nothing happens until you are in a project
+
+The extension activates only when the folder you opened contains a Polaris or
+Rojo project (`**/default.project.json`, `**/*.project.json`) or when you run
+one of its commands. It never starts a server on its own.
+
+## Two windows, two projects
+
+`polaris list` reports every session on the machine, so the extension filters
+them by path: a session belongs to a window when its `default.project.json`
+lives inside one of that window's folders.
+
+- The status bar and the menu only talk about this window's sessions.
+- `Stop Server` stops **one id at a time**, never `--all`, so stopping in one
+  window leaves the other project's server running.
+- `Session Info` prints this workspace first and lists the others as
+  "other windows (left alone)".
+
+The project folder name is shown in the tooltip, which is how you tell `game`
+from `my-other-game` without looking at the port.
+
 ## Requirements
 
 The `polaris` CLI installed and on your `PATH`. On Windows the one file

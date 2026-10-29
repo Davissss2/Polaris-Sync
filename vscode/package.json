@@ -1,125 +1,129 @@
 {
-  "name": "polaris",
-  "displayName": "Polaris",
-  "description": "Roblox sync: start, stop and inspect Polaris sessions without leaving the editor",
-  "version": "0.1.1",
-  "publisher": "davissss2",
-  "license": "Apache-2.0",
-  "icon": "icon.png",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Davissss2/Polaris-Sync"
-  },
-  "engines": {
-    "vscode": "^1.70.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "keywords": [
-    "roblox",
-    "luau",
-    "sync",
-    "polaris",
-    "studio"
-  ],
-  "main": "./extension.js",
-  "activationEvents": [
-    "onStartupFinished",
-    "workspaceContains:**/default.project.json",
-    "onLanguage:luau",
-    "onLanguage:lua"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "polaris.openMenu",
-        "title": "Open Menu",
-        "category": "Polaris"
-      },
-      {
-        "command": "polaris.start",
-        "title": "Start Server",
-        "category": "Polaris"
-      },
-      {
-        "command": "polaris.stop",
-        "title": "Stop Server",
-        "category": "Polaris"
-      },
-      {
-        "command": "polaris.build",
-        "title": "Build Place",
-        "category": "Polaris"
-      },
-      {
-        "command": "polaris.init",
-        "title": "New Project",
-        "category": "Polaris"
-      },
-      {
-        "command": "polaris.installPlugin",
-        "title": "Install Studio Plugin",
-        "category": "Polaris"
-      },
-      {
-        "command": "polaris.sessionInfo",
-        "title": "Session Info",
-        "category": "Polaris"
-      }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "polaris.start"
-        },
-        {
-          "command": "polaris.stop"
-        },
-        {
-          "command": "polaris.build"
-        },
-        {
-          "command": "polaris.init"
-        },
-        {
-          "command": "polaris.installPlugin"
-        },
-        {
-          "command": "polaris.sessionInfo"
-        }
-      ],
-      "explorer/context": [
-        {
-          "command": "polaris.start",
-          "when": "explorerResourceIsFolder",
-          "group": "polaris"
-        }
-      ]
-    },
-    "configuration": {
-      "title": "Polaris",
-      "properties": {
-        "polaris.executable": {
-          "type": "string",
-          "default": "polaris",
-          "description": "Path to the polaris executable. Leave it as is when it is on PATH."
-        },
-        "polaris.projectPath": {
-          "type": "string",
-          "default": "",
-          "description": "Folder holding default.project.json, relative to the workspace. Detected automatically when empty."
-        },
-        "polaris.refreshInterval": {
-          "type": "number",
-          "default": 3000,
-          "description": "How often the status bar checks the running sessions, in milliseconds. 0 disables polling."
-        }
-      }
-    }
-  },
-  "scripts": {
-    "package": "npx --yes @vscode/vsce package"
-  }
+    "name":  "polaris",
+    "displayName":  "Polaris",
+    "description":  "Roblox sync: start, stop and inspect Polaris sessions without leaving the editor",
+    "version":  "0.2.0",
+    "publisher":  "davissss2",
+    "license":  "Apache-2.0",
+    "icon":  "icon.png",
+    "repository":  {
+                       "type":  "git",
+                       "url":  "https://github.com/Davissss2/Polaris-Sync"
+                   },
+    "engines":  {
+                    "vscode":  "^1.70.0"
+                },
+    "categories":  [
+                       "Other"
+                   ],
+    "keywords":  [
+                     "roblox",
+                     "luau",
+                     "sync",
+                     "polaris",
+                     "studio"
+                 ],
+    "main":  "./extension.js",
+    "activationEvents":  [
+                             "workspaceContains:**/default.project.json",
+                             "workspaceContains:**/*.project.json",
+                             "onCommand:polaris.openMenu",
+                             "onCommand:polaris.start",
+                             "onCommand:polaris.stop",
+                             "onCommand:polaris.build",
+                             "onCommand:polaris.init",
+                             "onCommand:polaris.installPlugin",
+                             "onCommand:polaris.sessionInfo"
+                         ],
+    "contributes":  {
+                        "commands":  [
+                                         {
+                                             "command":  "polaris.openMenu",
+                                             "title":  "Open Menu",
+                                             "category":  "Polaris"
+                                         },
+                                         {
+                                             "command":  "polaris.start",
+                                             "title":  "Start Server",
+                                             "category":  "Polaris"
+                                         },
+                                         {
+                                             "command":  "polaris.stop",
+                                             "title":  "Stop Server",
+                                             "category":  "Polaris"
+                                         },
+                                         {
+                                             "command":  "polaris.build",
+                                             "title":  "Build Place",
+                                             "category":  "Polaris"
+                                         },
+                                         {
+                                             "command":  "polaris.init",
+                                             "title":  "New Project",
+                                             "category":  "Polaris"
+                                         },
+                                         {
+                                             "command":  "polaris.installPlugin",
+                                             "title":  "Install Studio Plugin",
+                                             "category":  "Polaris"
+                                         },
+                                         {
+                                             "command":  "polaris.sessionInfo",
+                                             "title":  "Session Info",
+                                             "category":  "Polaris"
+                                         }
+                                     ],
+                        "menus":  {
+                                      "commandPalette":  [
+                                                             {
+                                                                 "command":  "polaris.start"
+                                                             },
+                                                             {
+                                                                 "command":  "polaris.stop"
+                                                             },
+                                                             {
+                                                                 "command":  "polaris.build"
+                                                             },
+                                                             {
+                                                                 "command":  "polaris.init"
+                                                             },
+                                                             {
+                                                                 "command":  "polaris.installPlugin"
+                                                             },
+                                                             {
+                                                                 "command":  "polaris.sessionInfo"
+                                                             }
+                                                         ],
+                                      "explorer/context":  [
+                                                               {
+                                                                   "command":  "polaris.start",
+                                                                   "when":  "explorerResourceIsFolder",
+                                                                   "group":  "polaris"
+                                                               }
+                                                           ]
+                                  },
+                        "configuration":  {
+                                              "title":  "Polaris",
+                                              "properties":  {
+                                                                 "polaris.executable":  {
+                                                                                            "type":  "string",
+                                                                                            "default":  "polaris",
+                                                                                            "description":  "Path to the polaris executable. Leave it as is when it is on PATH."
+                                                                                        },
+                                                                 "polaris.projectPath":  {
+                                                                                             "type":  "string",
+                                                                                             "default":  "",
+                                                                                             "description":  "Folder holding default.project.json, relative to the workspace. Detected automatically when empty."
+                                                                                         },
+                                                                 "polaris.refreshInterval":  {
+                                                                                                 "type":  "number",
+                                                                                                 "default":  3000,
+                                                                                                 "description":  "How often the status bar checks the running sessions, in milliseconds. 0 disables polling."
+                                                                                             }
+                                                             }
+                                          }
+                    },
+    "scripts":  {
+                    "package":  "npx --yes @vscode/vsce package"
+                }
 }
-
