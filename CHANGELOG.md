@@ -17,6 +17,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `plugin/` — Polaris Studio plugin, forked from the Argon plugin and rebranded
+  (tree name, toolbar, widget, settings keys, undo waypoints and
+  `PolarisEmpty` marker)
+- `polaris plugin install|uninstall` to copy a built plugin into the Studio
+  plugins folder
+- `skills/polaris/SKILL.md` and `AGENTS.md` so AI agents can drive the CLI
+  without an MCP server
 - `polaris workspace expand` command to map every missing service of an existing
   project without touching folders that are already mapped
 - `polaris list` and `polaris info` commands, with the project, address, port,

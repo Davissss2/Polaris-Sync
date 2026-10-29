@@ -171,7 +171,7 @@ pub fn verify_path(path: &mut PathBuf, name: &mut String, meta: &mut Meta, vfs: 
 
 pub fn validate_properties(properties: Properties, filter: &SyncbackFilter) -> Properties {
 	// Temporary solution for empty Luau maps being serialized as arrays
-	if properties.contains_key(&ustr("ArgonEmpty")) {
+	if properties.contains_key(&ustr("PolarisEmpty")) || properties.contains_key(&ustr("ArgonEmpty")) {
 		UstrMap::new()
 	} else {
 		properties

@@ -83,6 +83,7 @@ polaris workspace expand
 | `polaris debug [mode]` | Start or stop a playtest (`play`, `run`, `start`, `stop`) |
 | `polaris stop` | Stop one session, or all of them with `--all` |
 | `polaris config` | Read, set, export or reset global and workspace settings |
+| `polaris plugin` | Install or uninstall the built Studio plugin |
 | `polaris doc` | Open the project page in your browser |
 
 Global flags: `--yes` (no prompts), `--json` (machine output), `-v/-q`
@@ -174,6 +175,16 @@ polaris info --json     # services, folders, type, session address
 polaris exec 'print(game.Workspace)'
 ```
 
+Agents do not need any extra server. Load the bundled skill and let it drive
+the CLI:
+
+- [skills/polaris/SKILL.md](skills/polaris/SKILL.md) — task oriented playbook
+  (discover sessions, create instances, edit properties, verify a sync)
+- [AGENTS.md](AGENTS.md) — how to work on this repository itself
+
+Drop the skill folder into your agent's skills directory (for example
+`.claude/skills/polaris`) and it will know when and how to call Polaris.
+
 ## Configuration
 
 Settings live in `polaris.toml` (workspace) or `<data dir>/config.toml`
@@ -189,11 +200,11 @@ polaris config --export my.toml
 
 ## Roadmap
 
-- [ ] Polaris Studio plugin (fork of the Argon plugin, session auth, restricted `exec`)
+- [x] Polaris Studio plugin (fork of the Argon plugin, session auth, restricted `exec`)
 - [ ] `polaris import <place.rbxl>` to scaffold a project from an existing place
 - [ ] `polaris asset` for mesh uploads through Roblox Open Cloud
 - [ ] Local dashboard: sessions, instance tree, inspector, live logs
-- [ ] MCP server so agents can query and mutate the tree directly
+- [ ] Optional MCP server for agents that prefer tools over a CLI
 
 ## Development
 

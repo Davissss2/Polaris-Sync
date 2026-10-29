@@ -16,6 +16,7 @@ mod exec;
 mod info;
 mod init;
 mod list;
+mod plugin;
 mod serve;
 mod sourcemap;
 mod stop;
@@ -151,6 +152,7 @@ impl Cli {
 			Commands::Exec(command) => command.main(),
 			Commands::List(command) => command.main(),
 			Commands::Info(command) => command.main(),
+			Commands::Plugin(command) => command.main(),
 			Commands::Workspace(command) => command.main(),
 			Commands::Config(command) => command.main(),
 			Commands::Doc(command) => command.main(),
@@ -170,6 +172,7 @@ pub enum Commands {
 	Exec(exec::Exec),
 	List(list::List),
 	Info(info::Info),
+	Plugin(plugin::Plugin),
 	Workspace(workspace::Workspace),
 	Config(config::Config),
 	Doc(doc::Doc),
