@@ -20,6 +20,7 @@ mod home;
 mod open;
 mod read;
 mod snapshot;
+mod status;
 mod stop;
 mod subscribe;
 mod unsubscribe;
@@ -96,6 +97,7 @@ impl Server {
 				.app_data(auth.clone())
 				.app_data(msgpack_config)
 				.service(details::main)
+				.service(status::main)
 				.service(subscribe::main)
 				.service(unsubscribe::main)
 				.service(snapshot::main)

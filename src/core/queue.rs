@@ -235,4 +235,15 @@ impl Queue {
 			.find(|listener| !listener.is_internal)
 			.map(|listener| listener.name.to_owned())
 	}
+
+	/// Every client currently subscribed, internal listeners excluded. A
+	/// session can be healthy with an empty list: the server is up but Studio
+	/// is not listening.
+	pub fn clients(&self) -> Vec<String> {
+		read!(self.listeners)
+			.iter()
+			.filter(|listener| !listener.is_internal)
+			.map(|listener| listener.name.to_owned())
+			.collect()
+	}
 }

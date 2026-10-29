@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), that adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2026-10-29
+
+### Added
+
+- `polaris list` reports which editors are attached to each session: a
+  `clients` array in `--json` and a `Clients` column in the table. A healthy
+  server with nobody listening no longer looks like a working connection, which
+  is what made a dead Studio session so hard to spot
+
+### Fixed
+
+- The Studio plugin reconnects after the session drops. The retry waited five
+  seconds and then compared timestamps that had just been written, so the
+  condition could be false forever and the plugin stayed disconnected while
+  `polaris serve` kept running
+
 ## [0.1.2] - 2026-10-29
 
 The first release that ships the plugin built with the CLI instead of Rojo, so
