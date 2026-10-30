@@ -349,7 +349,6 @@ function App:awaitConsent(kind: string, message: string, signal: any, acceptValu
 				end)
 
 				if ok and decision and not finished then
-					self.core:clearConsent()
 					signal:Fire(if decision == "accept" then acceptValue else "Cancel")
 
 					return
