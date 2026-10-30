@@ -81,7 +81,14 @@ impl Exec {
 					.send();
 
 				match response {
-					Ok(_) => argon_info!("Code executed successfully!"),
+					Ok(response) if response.status().is_success() => {
+						argon_info!("Code sent to Studio, its output only shows up in the Studio output window")
+					}
+					Ok(response) => argon_error!(
+						"Code execution failed: {} {}",
+						response.status(),
+						response.text().unwrap_or_default()
+					),
 					Err(err) => argon_error!("Code execution failed: {}", err),
 				}
 

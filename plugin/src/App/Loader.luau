@@ -2,15 +2,31 @@ local ContentProvider = game:GetService("ContentProvider")
 
 local Polaris = script:FindFirstAncestor("Polaris")
 
-local Util = require(Polaris.Util)
 local Log = require(Polaris.Log)
 
 local Assets = require(script.Parent.Assets)
 
 local Loader = {}
 
+-- Only the strings inside an asset group are asset ids. The file also carries
+-- notes for whoever edits it, and preloading those as images made Studio fail
+-- with an "Invalid image or texture" error on every load
 function Loader.assets(): { string }
-	return Util.dictionaryToArray(Assets)
+	local assets = {}
+
+	for _, group in Assets do
+		if type(group) ~= "table" then
+			continue
+		end
+
+		for _, value in group do
+			if type(value) == "string" then
+				table.insert(assets, value)
+			end
+		end
+	end
+
+	return assets
 end
 
 function Loader.load()

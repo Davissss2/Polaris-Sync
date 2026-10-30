@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), that adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The plugin preloaded its own documentation as an image.
+  `App/Loader.luau` walked every string in `App/Assets.json`, including the
+  `_note` entry that describes the file, so every load logged
+  `Asset (Image) ... load failed: Invalid image or texture` in Studio. Only the
+  values of an asset group are preloaded now
+- `polaris exec` announced `Code executed successfully!` for any HTTP response,
+  a `500` from the server included, and for snippets that failed inside Studio.
+  It now says the code was sent, where its output appears, and reports the
+  status and body when the request itself fails
+
 ## [0.1.4] - 2026-10-29
 
 ### Fixed

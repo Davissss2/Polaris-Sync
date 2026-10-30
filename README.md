@@ -311,6 +311,18 @@ polaris config --default        # back to defaults
 polaris config --export my.toml
 ```
 
+## Known limitations
+
+- `polaris exec` does not wait for a result: it sends the code and reports that
+  it was sent. The output and any runtime error only show up in the Studio
+  output window, so a failing snippet still exits with `0`.
+- The plugin connects on load (`AutoConnect`, `localhost:8000` by default) to
+  whatever server answers on that host and port, and applies the project to the
+  place that happens to be open. A project that does not declare `placeIds` or
+  `gameId` is accepted by any place, and `KeepUnknowns` merges the project with
+  the existing instances instead of replacing them. Declare `placeIds` in
+  `default.project.json` when a project is meant for a single place.
+
 ## Roadmap
 
 - [x] Polaris Studio plugin (fork of the Argon plugin, session auth, restricted `exec`)
