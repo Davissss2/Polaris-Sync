@@ -178,6 +178,7 @@ polaris workspace expand
 | `polaris info` | Services, folders, project type and live session address |
 | `polaris workspace expand` | Map every missing service without touching existing folders |
 | `polaris exec <code>` | Execute Luau in the connected Studio session |
+| `polaris consent` | Show, accept or reject the confirmation a session is waiting on |
 | `polaris studio` | Launch a new Roblox Studio instance |
 | `polaris debug [mode]` | Start or stop a playtest (`play`, `run`, `start`, `stop`) |
 | `polaris stop` | Stop one session, or all of them with `--all` |
@@ -330,6 +331,15 @@ polaris info ./my-game --json    # gameId and placeIds, to check before connecti
 When `AutoConnect` is turned back on in the plugin settings, the confirmation
 above still runs, so an unattended connection cannot overwrite a place by
 surprise.
+
+A confirmation that is waiting on screen is not invisible: `polaris list` shows
+it in the `Pending` column, and an agent can answer it without a click.
+
+```bash
+polaris consent             # what is it waiting on
+polaris consent --accept    # same as pressing Continue or Accept
+polaris consent --reject    # same as pressing Cancel
+```
 
 ## Known limitations
 

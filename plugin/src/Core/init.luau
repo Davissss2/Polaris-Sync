@@ -151,6 +151,10 @@ function Core:stop()
 
 	if self.client.isSubscribed then
 		task.spawn(function()
+			-- A prompt that nobody answers would otherwise stay listed after
+			-- the plugin is gone
+			self:clearConsent()
+
 			self.client:unsubscribe():catch(function(err)
 				Log.debug("Failed to unsubscribe from the server", err)
 			end)
@@ -200,6 +204,24 @@ function Core:onProgress(callback: (state: "Synced" | "Syncing" | "Error", detai
 
 		return callback(state, detail)
 	end
+end
+
+-- Tells the server which confirmation is on screen, so it stops being
+-- invisible outside Studio. Older servers answer 404 and this is a no-op
+function Core:announceConsent(kind: string, message: string)
+	return self.client:announceConsent(kind, message):catch(function(err)
+		Log.trace("Failed to announce the confirmation prompt", err)
+	end)
+end
+
+function Core:consentDecision(): Promise.TypedPromise<string?>
+	return self.client:readConsent()
+end
+
+function Core:clearConsent()
+	return self.client:clearConsent():catch(function(err)
+		Log.trace("Failed to clear the confirmation prompt", err)
+	end)
 end
 
 function Core.wasExitGraceful(err: Error.Error)

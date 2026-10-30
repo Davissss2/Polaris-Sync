@@ -137,6 +137,42 @@ function Client:write(changes: Types.Changes): Promise.Promise
 	})
 end
 
+function Client:announceConsent(kind: string, message: string): Promise.Promise
+	Log.trace("Client request: consent")
+
+	local url = self:getUrl("consent")
+
+	return Http.post(url, {
+		clientId = self.clientId,
+		kind = kind,
+		message = message,
+	})
+end
+
+function Client:readConsent(): Promise.TypedPromise<string?>
+	Log.trace("Client request: consent read")
+
+	local url = self:getUrl("consent/read")
+
+	return Http.post(url, {
+		clientId = self.clientId,
+	}):andThen(function(response)
+		local reply = response:decode()
+
+		return reply and reply.decision or nil
+	end)
+end
+
+function Client:clearConsent(): Promise.Promise
+	Log.trace("Client request: consent clear")
+
+	local url = self:getUrl("consent/clear")
+
+	return Http.post(url, {
+		clientId = self.clientId,
+	})
+end
+
 function Client:open(instance: Types.Ref, line: number): Promise.Promise
 	Log.trace("Client request: open")
 

@@ -11,6 +11,7 @@ use std::{
 };
 
 use self::{
+	consent::Consent,
 	meta::{Meta, SourceEntry},
 	processor::Processor,
 	queue::Queue,
@@ -19,6 +20,7 @@ use self::{
 use crate::{core::snapshot::Snapshot, lock, middleware::new_snapshot, project::Project, util, vfs::Vfs};
 
 pub mod changes;
+pub mod consent;
 pub mod helpers;
 pub mod meta;
 pub mod processor;
@@ -31,6 +33,7 @@ pub struct Core {
 	tree: Arc<Mutex<Tree>>,
 	queue: Arc<Queue>,
 	processor: Arc<Processor>,
+	consent: Arc<Consent>,
 	_vfs: Arc<Vfs>,
 }
 
@@ -58,6 +61,7 @@ impl Core {
 		let vfs = Arc::new(vfs);
 		let tree = Arc::new(Mutex::new(Tree::new(snapshot)));
 		let queue = Arc::new(Queue::new());
+		let consent = Arc::new(Consent::new());
 
 		trace!("Starting Processor");
 
@@ -76,6 +80,7 @@ impl Core {
 			tree,
 			queue,
 			processor,
+			consent,
 			_vfs: vfs,
 		})
 	}
@@ -102,6 +107,11 @@ impl Core {
 
 	pub fn queue(&self) -> Arc<Queue> {
 		self.queue.clone()
+	}
+
+	/// Prompt the Studio plugin is waiting on, if any
+	pub fn consent(&self) -> Arc<Consent> {
+		self.consent.clone()
 	}
 
 	pub fn processor(&self) -> Arc<Processor> {

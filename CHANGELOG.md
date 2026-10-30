@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- `polaris consent` reports the confirmation the Studio plugin is waiting on,
+  and answers it with `--accept` or `--reject`. That is the same as pressing
+  Continue or Cancel, but without a click, so an agent can clear a prompt
+- `polaris list` shows the pending confirmation in a `Pending` column, and
+  `/status` reports it, so an empty `clients` list is no longer ambiguous: the
+  session is either unattended or waiting for an answer
 - `polaris info` reports `gameId` and `placeIds` (a `Bound to:` line, and both
   keys in `--json`), so a tool can check what a project is tied to before
   connecting Studio to it

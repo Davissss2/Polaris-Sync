@@ -87,6 +87,15 @@ Compare `placeIds` with the place that is open before connecting. A project
 that declares neither `gameId` nor `placeIds` will prompt for confirmation and,
 if accepted, merges with what the place already has.
 
+A prompt on screen is not a dead session. `list --json` reports the `pending`
+confirmation, and you can answer it without touching Studio:
+
+```bash
+polaris consent --json              # what is it waiting on
+polaris consent --accept --json     # same as pressing Continue or Accept
+polaris consent --reject --json     # same as pressing Cancel
+```
+
 ### Scaffold a new project
 
 ```bash
@@ -168,7 +177,7 @@ polaris stop --all
 | --- | --- |
 | `No project files found` | The path must contain `default.project.json`, or use `polaris init`. |
 | `Port is already in use` | Another project is serving it; `polaris list --json` shows ports. |
-| Changes do not appear in Studio | Is the plugin connected? `list --json` shows `clients`; an empty array means nobody is attached. Does `polaris info` report an address? |
+| Changes do not appear in Studio | `list --json` shows `clients` and `pending`. Empty `clients` means nobody is attached, or the plugin is waiting for an answer (`polaris consent`). Does `polaris info` report an address? |
 | `401` from the server | The session runs with `--secure`; paste the token from `~/.polaris/token` in the plugin settings. |
 | A service is missing | `polaris workspace expand`. |
 | `Cannot serve non-place project` | Only `DataModel` projects can be served. |

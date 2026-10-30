@@ -13,6 +13,7 @@ use crate::util;
 
 mod build;
 mod config;
+mod consent;
 mod debug;
 mod doc;
 mod exec;
@@ -153,6 +154,7 @@ impl Cli {
 			Commands::Studio(command) => command.main(),
 			Commands::Debug(command) => command.main(),
 			Commands::Exec(command) => command.main(),
+			Commands::Consent(command) => command.main(),
 			Commands::List(command) => command.main(),
 			Commands::Info(command) => command.main(),
 			Commands::Plugin(command) => command.main(),
@@ -173,6 +175,7 @@ pub enum Commands {
 	Studio(studio::Studio),
 	Debug(debug::Debug),
 	Exec(exec::Exec),
+	Consent(consent::Consent),
 	List(list::List),
 	Info(info::Info),
 	Plugin(plugin::Plugin),

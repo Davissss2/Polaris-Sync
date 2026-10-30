@@ -331,6 +331,44 @@ function App:diff(changes: Types.Changes?, tree: any?)
 	self.diffWidget:set(widget)
 end
 
+-- A confirmation can also be answered from outside Studio with
+-- `polaris consent`, which is what lets an agent unblock a session without a
+-- click. The interface stays the primary way to answer
+function App:awaitConsent(kind: string, message: string, signal: any, acceptValue: string): string
+	local finished = false
+
+	if self.core then
+		self.core:announceConsent(kind, message)
+
+		task.spawn(function()
+			while not finished and self.core do
+				task.wait(1)
+
+				local ok, decision = pcall(function()
+					return self.core and self.core:consentDecision():expect()
+				end)
+
+				if ok and decision and not finished then
+					self.core:clearConsent()
+					signal:Fire(if decision == "accept" then acceptValue else "Cancel")
+
+					return
+				end
+			end
+		end)
+	end
+
+	local choice = signal:Wait()
+	finished = true
+
+	-- Whatever answered it, the server should stop reporting the prompt
+	if self.core then
+		self.core:clearConsent()
+	end
+
+	return choice
+end
+
 function App:connect()
 	local project = Value({})
 	local canceled = false
@@ -375,7 +413,7 @@ function App:connect()
 				Signal = signal,
 			})
 
-			local choice = signal:Wait()
+			local choice = self:awaitConsent("changes", message, signal, "Accept")
 
 			while choice == "Diff" do
 				self:diff(changes, tree)
@@ -396,7 +434,7 @@ function App:connect()
 				Signal = signal,
 			})
 
-			result = signal:Wait() == "Continue"
+			result = self:awaitConsent("project", message, signal, "Continue") == "Continue"
 		end
 
 		if self.core.status == Core.Status.Connected then

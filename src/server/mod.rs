@@ -14,6 +14,7 @@ use crate::{
 	project::ProjectDetails,
 };
 
+mod consent;
 mod details;
 mod exec;
 mod home;
@@ -98,6 +99,10 @@ impl Server {
 				.app_data(msgpack_config)
 				.service(details::main)
 				.service(status::main)
+				.service(consent::announce)
+				.service(consent::read_pending)
+				.service(consent::decide)
+				.service(consent::clear)
 				.service(subscribe::main)
 				.service(unsubscribe::main)
 				.service(snapshot::main)

@@ -3,7 +3,7 @@ use clap::Parser;
 use serde::{Deserialize, Serialize};
 use std::{path::Path, time::Duration};
 
-use crate::{argon_info, argon_warn, cli::Cli, logger::Table, sessions, util};
+use crate::{argon_info, argon_warn, cli::Cli, core::consent::Pending, logger::Table, sessions, util};
 
 /// List every Polaris session with its project and port
 #[derive(Parser)]
@@ -25,6 +25,8 @@ struct SessionEntry {
 	/// Editors attached to the session. None when the server is too old to
 	/// answer, an empty list when nobody is listening
 	clients: Option<Vec<String>>,
+	/// Confirmation the plugin is waiting on, if any
+	pending: Option<Pending>,
 }
 
 impl List {
@@ -35,15 +37,16 @@ impl List {
 				let address = session.get_address();
 				let running = util::process_exists(session.pid);
 				let healthy = running && is_responsive(address.as_deref());
-				let clients = if healthy {
-					fetch_clients(address.as_deref())
+				let status = if healthy {
+					fetch_status(address.as_deref())
 				} else {
 					None
 				};
 
 				SessionEntry {
 					healthy,
-					clients,
+					clients: status.as_ref().map(|status| status.clients.clone()),
+					pending: status.and_then(|status| status.pending),
 					id,
 					project: session.project.as_ref().map(|path| path.to_string_lossy().to_string()),
 					address,
@@ -69,7 +72,7 @@ impl List {
 		}
 
 		let mut table = Table::new();
-		table.set_header(vec!["ID", "Project", "Address", "PID", "Status", "Clients"]);
+		table.set_header(vec!["ID", "Project", "Address", "PID", "Status", "Clients", "Pending"]);
 
 		for entry in entries {
 			table.add_row(vec![
@@ -87,6 +90,10 @@ impl List {
 				match entry.clients {
 					Some(ref clients) if clients.is_empty() => String::from("none"),
 					Some(ref clients) => clients.len().to_string(),
+					None => String::from("-"),
+				},
+				match entry.pending {
+					Some(ref pending) => pending.kind.clone(),
 					None => String::from("-"),
 				},
 			]);
@@ -129,11 +136,15 @@ fn is_responsive(address: Option<&str>) -> bool {
 #[derive(Deserialize)]
 struct StatusResponse {
 	clients: Vec<String>,
+	/// Older servers do not send this field at all
+	#[serde(default)]
+	pending: Option<Pending>,
 }
 
-/// Asks the session which editors are attached to it. None means the server is
-/// too old to answer, which is not the same as nobody being connected
-fn fetch_clients(address: Option<&str>) -> Option<Vec<String>> {
+/// Asks the session which editors are attached to it and what it is waiting on.
+/// None means the server is too old to answer, which is not the same as nobody
+/// being connected
+fn fetch_status(address: Option<&str>) -> Option<StatusResponse> {
 	let address = address?;
 
 	let client = reqwest::blocking::Client::builder()
@@ -147,5 +158,5 @@ fn fetch_clients(address: Option<&str>) -> Option<Vec<String>> {
 		return None;
 	}
 
-	response.json::<StatusResponse>().ok().map(|status| status.clients)
+	response.json::<StatusResponse>().ok()
 }
