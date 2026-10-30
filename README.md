@@ -336,10 +336,9 @@ surprise.
 - `polaris exec` does not wait for a result: it sends the code and reports that
   it was sent. The output and any runtime error only show up in the Studio
   output window, so a failing snippet still exits with `0`.
-- Deleting an instance in Studio deletes its files. Above `RemovalsThreshold`
-  (25 by default) the plugin asks first, and `move_to_bin` (on by default) sends
-  the files to the system bin instead of erasing them. Turn `move_to_bin` off
-  only if you have your own backups.
+- Deleting an instance in Studio deletes its files, so the plugin asks before
+  writing any removal back. `move_to_bin` (on by default) sends the files to the
+  system bin instead of erasing them; turn it off only if you have backups.
 
 ## Roadmap
 

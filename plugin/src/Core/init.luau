@@ -360,10 +360,11 @@ function Core:__startSyncbackLoop()
 				local changes = aggregateChanges
 				aggregateChanges = Changes.new()
 
-				-- Removing something in Studio deletes its files from the disk,
-				-- so a mass removal is confirmed here too, not just incoming
-				if #changes.removals > Config:get("RemovalsThreshold") then
-					local err = Error.new(Error.MassSyncback, #changes.removals)
+				-- Removing something in Studio deletes its files from the disk.
+				-- The count is instances, not files: deleting one folder takes
+				-- every file under it, so any removal is confirmed here
+				if #changes.removals > 0 then
+					local err = Error.new(Error.MassSyncback)
 
 					if not self.__prompt(err.message) then
 						Log.warn("Discarded a sync back with", #changes.removals, "removals")

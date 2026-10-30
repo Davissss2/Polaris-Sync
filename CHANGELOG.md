@@ -19,9 +19,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - A project that declares neither `placeIds` nor `gameId` is accepted by any
   place, so the plugin now asks for confirmation before applying its tree. The
   guard runs even when `AutoConnect` is turned back on or prompts are off
-- Deleting instances in Studio now asks before removing more than
-  `RemovalsThreshold` files. The limit only guarded the other direction, so a
-  deletion in the Explorer could wipe a folder from the disk without warning
+- Deleting instances in Studio is confirmed before anything is written back.
+  The guard only covered the other direction, and `RemovalsThreshold` counts
+  instances, not files, so removing one folder in the Explorer could take every
+  file under it without warning
 
 ### Fixed
 
