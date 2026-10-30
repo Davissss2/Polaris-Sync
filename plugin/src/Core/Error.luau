@@ -15,6 +15,8 @@ local Error = {
 	Version = "Client version: $1 is not compatible with the server version: $2",
 	TooManyChanges = "There are $1 additions, $2 updates, $3 deletions compared to the server",
 	MassDeletion = "This sync deletes $1 instances. Accept only if you expect them to be gone",
+	MassSyncback = "This sync back deletes $1 files from the disk. Accept only if you expect them to be gone",
+	UnboundProject = "Project $1 does not declare placeIds or gameId, so it is not bound to this place. Its tree merges into whatever is open here",
 	Terminated = "Terminated connection by the user",
 	-- Core errors
 	UnknownEvent = "Received an unknown event from the server: $1, with data: $2",

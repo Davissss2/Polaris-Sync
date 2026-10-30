@@ -114,7 +114,7 @@ impl Default for Config {
 
 			rename_instances: true,
 			keep_duplicates: false,
-			move_to_bin: false,
+			move_to_bin: true,
 			changes_threshold: 5,
 			max_unsynced_changes: 10,
 

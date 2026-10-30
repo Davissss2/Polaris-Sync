@@ -311,17 +311,35 @@ polaris config --default        # back to defaults
 polaris config --export my.toml
 ```
 
+## Connecting
+
+The Studio plugin does not connect on its own (`AutoConnect` defaults to
+`false`). Start the server, open the Polaris panel in Studio and press Connect.
+Nothing is written to the place until you do.
+
+Binding a project to its place makes connecting safe and automatic again: with
+`placeIds` (or `gameId`) in `default.project.json`, the plugin refuses any other
+place. A project that declares neither is accepted everywhere, so the plugin
+asks for confirmation before applying its tree, and `KeepUnknowns` merges it
+with whatever is already open instead of replacing it.
+
+```bash
+polaris info ./my-game --json    # gameId and placeIds, to check before connecting
+```
+
+When `AutoConnect` is turned back on in the plugin settings, the confirmation
+above still runs, so an unattended connection cannot overwrite a place by
+surprise.
+
 ## Known limitations
 
 - `polaris exec` does not wait for a result: it sends the code and reports that
   it was sent. The output and any runtime error only show up in the Studio
   output window, so a failing snippet still exits with `0`.
-- The plugin connects on load (`AutoConnect`, `localhost:8000` by default) to
-  whatever server answers on that host and port, and applies the project to the
-  place that happens to be open. A project that does not declare `placeIds` or
-  `gameId` is accepted by any place, and `KeepUnknowns` merges the project with
-  the existing instances instead of replacing them. Declare `placeIds` in
-  `default.project.json` when a project is meant for a single place.
+- Deleting an instance in Studio deletes its files. Above `RemovalsThreshold`
+  (25 by default) the plugin asks first, and `move_to_bin` (on by default) sends
+  the files to the system bin instead of erasing them. Turn `move_to_bin` off
+  only if you have your own backups.
 
 ## Roadmap
 

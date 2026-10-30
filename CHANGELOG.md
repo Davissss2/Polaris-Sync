@@ -6,8 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `polaris info` reports `gameId` and `placeIds` (a `Bound to:` line, and both
+  keys in `--json`), so a tool can check what a project is tied to before
+  connecting Studio to it
+
+### Changed
+
+- The Studio plugin no longer connects when it loads: `AutoConnect` defaults to
+  `false`. A session has to be connected on purpose, from the panel
+- A project that declares neither `placeIds` nor `gameId` is accepted by any
+  place, so the plugin now asks for confirmation before applying its tree. The
+  guard runs even when `AutoConnect` is turned back on or prompts are off
+- Deleting instances in Studio now asks before removing more than
+  `RemovalsThreshold` files. The limit only guarded the other direction, so a
+  deletion in the Explorer could wipe a folder from the disk without warning
+
 ### Fixed
 
+- `move_to_bin` defaults to `true`: files removed by a sync back go to the
+  system bin instead of being erased
 - The plugin preloaded its own documentation as an image.
   `App/Loader.luau` walked every string in `App/Assets.json`, including the
   `_note` entry that describes the file, so every load logged

@@ -207,12 +207,24 @@ function Core.wasExitGraceful(err: Error.Error)
 		or err == Error.PlaceIds
 		or err == Error.TooManyChanges
 		or err == Error.MassDeletion
+		or err == Error.UnboundProject
 		or err == Error.Terminated
 end
 
 -- Internal functions
 
 function Core:__verifyProject(project: Types.Project, initial: boolean?): Promise.Promise
+	-- A project that declares neither a game nor its places is accepted by any
+	-- place, and applying it merges into whatever is open. That has to be a
+	-- conscious choice, so it is always confirmed, even with prompts off
+	if initial and not project.gameId and #project.placeIds == 0 then
+		local err = Error.new(Error.UnboundProject, project.name)
+
+		if not self.__prompt(err.message) then
+			return Promise.reject(err)
+		end
+	end
+
 	if not self:__shouldPrompt(initial) then
 		return Promise.resolve()
 	end
@@ -347,6 +359,18 @@ function Core:__startSyncbackLoop()
 
 				local changes = aggregateChanges
 				aggregateChanges = Changes.new()
+
+				-- Removing something in Studio deletes its files from the disk,
+				-- so a mass removal is confirmed here too, not just incoming
+				if #changes.removals > Config:get("RemovalsThreshold") then
+					local err = Error.new(Error.MassSyncback, #changes.removals)
+
+					if not self.__prompt(err.message) then
+						Log.warn("Discarded a sync back with", #changes.removals, "removals")
+
+						continue
+					end
+				end
 
 				self.__progress("Syncing", changes)
 

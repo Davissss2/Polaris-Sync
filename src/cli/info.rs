@@ -31,6 +31,10 @@ struct ProjectInfo {
 	kind: String,
 	typescript: bool,
 	wally: bool,
+	#[serde(skip_serializing_if = "Option::is_none")]
+	game_id: Option<u64>,
+	#[serde(skip_serializing_if = "Vec::is_empty")]
+	place_ids: Vec<u64>,
 	services: Vec<ServiceEntry>,
 	address: Option<String>,
 }
@@ -74,6 +78,8 @@ impl Info {
 			kind: if project.is_place() { "place" } else { "model" }.to_owned(),
 			typescript: project.is_ts(),
 			wally: project.is_wally(),
+			game_id: project.game_id,
+			place_ids: project.place_ids.clone(),
 			services,
 			address,
 		};
@@ -84,10 +90,34 @@ impl Info {
 			return Ok(());
 		}
 
+		// Whether the project is tied to a place decides if the Studio plugin
+		// accepts it on sight or has to ask first
+		let binding = if info.game_id.is_none() && info.place_ids.is_empty() {
+			String::from("nothing, any place is accepted")
+		} else {
+			let game = info
+				.game_id
+				.map(|id| id.to_string())
+				.unwrap_or_else(|| String::from("any"));
+
+			let places = if info.place_ids.is_empty() {
+				String::from("any")
+			} else {
+				info.place_ids
+					.iter()
+					.map(u64::to_string)
+					.collect::<Vec<String>>()
+					.join(", ")
+			};
+
+			format!("game {game}, places {places}")
+		};
+
 		argon_info!(
-			"Project: {}\nType: {}\nWorkspace: {}\nServing at: {}",
+			"Project: {}\nType: {}\nBound to: {}\nWorkspace: {}\nServing at: {}",
 			info.name.bold(),
 			info.kind,
+			binding,
 			info.workspace,
 			info.address.clone().unwrap_or_else(|| String::from("not running"))
 		);

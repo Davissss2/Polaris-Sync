@@ -43,7 +43,9 @@ local DEFAULTS = {
 	Host = "localhost",
 	Port = 8000,
 	Token = "",
-	AutoConnect = true,
+	-- Connecting is a conscious decision: a project that is not bound to a
+	-- place would otherwise apply its tree to whatever happens to be open
+	AutoConnect = false,
 	AutoReconnect = true,
 	LiveHydrate = true,
 	-- Instances that only exist in Studio are kept instead of deleted, so the
