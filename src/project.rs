@@ -149,6 +149,13 @@ impl Project {
 		}
 	}
 
+	/// Whether this project accepts an editor working on a given place. The
+	/// plugin asks before applying anything; this is the second line, so the
+	/// server itself refuses to serve a project that belongs somewhere else
+	pub fn accepts_place(&self, place_id: Option<u64>, game_id: Option<u64>) -> Result<(), String> {
+		check_place_binding(self.game_id, &self.place_ids, game_id, place_id)
+	}
+
 	pub fn is_ts(&self) -> bool {
 		for glob in &self.ignore_globs {
 			if glob.matches("**/tsconfig.json") {
@@ -244,6 +251,40 @@ pub struct ProjectDetails {
 	game_id: Option<u64>,
 	place_ids: Vec<u64>,
 	root_refs: Vec<Ref>,
+}
+
+/// Compares what a project says it belongs to with what the editor reports.
+/// A side that says nothing (an editor that predates this check) is let
+/// through, so old plugins keep working; a mismatch is always refused
+pub fn check_place_binding(
+	project_game_id: Option<u64>,
+	project_place_ids: &[u64],
+	editor_game_id: Option<u64>,
+	editor_place_id: Option<u64>,
+) -> Result<(), String> {
+	if let (Some(expected), Some(actual)) = (project_game_id, editor_game_id) {
+		if expected != actual {
+			return Err(format!(
+				"This project belongs to game {expected}, but Studio is on game {actual}"
+			));
+		}
+	}
+
+	if let Some(actual) = editor_place_id {
+		if !project_place_ids.is_empty() && !project_place_ids.contains(&actual) {
+			let places = project_place_ids
+				.iter()
+				.map(u64::to_string)
+				.collect::<Vec<String>>()
+				.join(", ");
+
+			return Err(format!(
+				"This project is bound to place {places}, but Studio is on place {actual}"
+			));
+		}
+	}
+
+	Ok(())
 }
 
 impl ProjectDetails {

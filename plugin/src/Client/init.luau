@@ -52,6 +52,10 @@ function Client:subscribe(): Promise.Promise
 	return Http.post(url, {
 		clientId = self.clientId,
 		name = self.placeName,
+		-- The server refuses a project bound to another place, so the mistake
+		-- cannot be applied even if someone accepts the prompt by hand
+		placeId = game.PlaceId,
+		gameId = game.GameId,
 	})
 		:andThen(function()
 			self.isSubscribed = true

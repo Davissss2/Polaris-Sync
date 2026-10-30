@@ -96,6 +96,27 @@ polaris consent --accept --json     # same as pressing Continue or Accept
 polaris consent --reject --json     # same as pressing Cancel
 ```
 
+### Build a new game next to a live session
+
+Several projects can be served at once, each on its own port, and a Studio that
+is already open may be attached to an old one. Before creating or connecting
+anything:
+
+```bash
+polaris list --json              # project, address, clients, pending, placeId
+polaris info ./new-game --json   # gameId and placeIds of the new project
+```
+
+- `placeId` in `list` is the place the attached editor is on. Compare it with
+  the `placeIds` of the project you are about to serve.
+- A project that declares `placeIds`/`gameId` is refused by any other place:
+  the server answers `409` with the reason. That is the setting to aim for.
+- A project that declares neither asks before applying its tree, and merges
+  with whatever the place already has (`KeepUnknowns`).
+- Never run `polaris stop --all` to free a port: it kills the user's other
+  sessions. Start the new one with `-P <free port>` and say which port to
+  connect, or stop only the stale session by id.
+
 ### Scaffold a new project
 
 ```bash
@@ -186,6 +207,8 @@ polaris stop --all
 ## Do not
 
 - Do not invent flags. Run `polaris <command> --help` first.
+- Do not assume the session answering on the plugin's port is yours: check its
+  project and `placeId` in `list --json` before connecting.
 - Do not assume a fixed port; read it from `list` or `info`.
 - Do not parse colored log output; use `--json`.
 - Do not claim a sync succeeded without a successful command exit code.

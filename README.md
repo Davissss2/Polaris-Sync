@@ -341,6 +341,12 @@ polaris consent --accept    # same as pressing Continue or Accept
 polaris consent --reject    # same as pressing Cancel
 ```
 
+The server also refuses to serve the wrong place: the plugin sends the `placeId`
+and `gameId` it is attached to when it subscribes, and a project that declares a
+different one gets a `409` instead of a session. `list --json` reports the
+`placeId` of each session, so two projects served at once can be told apart
+without opening Studio.
+
 ## Known limitations
 
 - `polaris exec` does not wait for a result: it sends the code and reports that

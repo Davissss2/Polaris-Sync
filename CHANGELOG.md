@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- The server refuses to serve a project bound to another place: the plugin
+  sends its `placeId` and `gameId` when it subscribes, and a mismatch gets a
+  `409` with the reason instead of a session. A prompt accepted by inertia, or
+  a plugin that reconnects to an old session, can no longer apply the wrong
+  project
+- `polaris list` reports the `placeId` each session is attached to (`/status`),
+  so two projects served at the same time can be told apart
 - `polaris consent` reports the confirmation the Studio plugin is waiting on,
   and answers it with `--accept` or `--reject`. That is the same as pressing
   Continue or Cancel, but without a click, so an agent can clear a prompt

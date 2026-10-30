@@ -27,6 +27,9 @@ struct SessionEntry {
 	clients: Option<Vec<String>>,
 	/// Confirmation the plugin is waiting on, if any
 	pending: Option<Pending>,
+	/// Place the attached editor is on, when the server can tell
+	#[serde(skip_serializing_if = "Option::is_none")]
+	place_id: Option<u64>,
 }
 
 impl List {
@@ -46,7 +49,8 @@ impl List {
 				SessionEntry {
 					healthy,
 					clients: status.as_ref().map(|status| status.clients.clone()),
-					pending: status.and_then(|status| status.pending),
+					pending: status.as_ref().and_then(|status| status.pending.clone()),
+					place_id: status.and_then(|status| status.place_id),
 					id,
 					project: session.project.as_ref().map(|path| path.to_string_lossy().to_string()),
 					address,
@@ -134,11 +138,15 @@ fn is_responsive(address: Option<&str>) -> bool {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct StatusResponse {
 	clients: Vec<String>,
 	/// Older servers do not send this field at all
 	#[serde(default)]
 	pending: Option<Pending>,
+	/// Older servers do not send this field at all
+	#[serde(default)]
+	place_id: Option<u64>,
 }
 
 /// Asks the session which editors are attached to it and what it is waiting on.

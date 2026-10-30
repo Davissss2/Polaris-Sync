@@ -34,6 +34,8 @@ pub struct Core {
 	queue: Arc<Queue>,
 	processor: Arc<Processor>,
 	consent: Arc<Consent>,
+	/// Place the last editor that subscribed (or tried to) was on
+	place: Mutex<Option<u64>>,
 	_vfs: Arc<Vfs>,
 }
 
@@ -81,6 +83,7 @@ impl Core {
 			queue,
 			processor,
 			consent,
+			place: Mutex::new(None),
 			_vfs: vfs,
 		})
 	}
@@ -112,6 +115,16 @@ impl Core {
 	/// Prompt the Studio plugin is waiting on, if any
 	pub fn consent(&self) -> Arc<Consent> {
 		self.consent.clone()
+	}
+
+	/// Remembers which place the editor is on, so `list` can tell two sessions
+	/// apart without opening Studio
+	pub fn note_place(&self, place_id: u64) {
+		*lock!(self.place) = Some(place_id);
+	}
+
+	pub fn place(&self) -> Option<u64> {
+		*lock!(self.place)
 	}
 
 	pub fn processor(&self) -> Arc<Processor> {
